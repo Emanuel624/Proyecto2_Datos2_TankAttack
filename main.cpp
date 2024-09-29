@@ -1,13 +1,12 @@
 #include <QApplication>
-#include <QWidget>
+#include "prueba.h"
 
 int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);  // Inicia la aplicación Qt
+    QApplication app(argc, argv);
 
-    QWidget window;  // Crea una ventana básica
-    window.resize(250, 150);  // Establece el tamaño de la ventana
-    window.setWindowTitle("Ventana Basica");  // Establece el título de la ventana
-    window.show();  // Muestra la ventana
+    // Crear y mostrar la ventana de la imagen
+    ImageWindow window;
+    window.show();
 
-    return app.exec();  // Inicia el bucle de eventos de Qt
+    return app.exec();
 }

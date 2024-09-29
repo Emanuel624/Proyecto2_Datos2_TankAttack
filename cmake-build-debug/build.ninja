@@ -47,13 +47,37 @@ cmake_ninja_workdir = /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-bui
 #############################################
 # Order-only phony target for Proyecto2_TankAttack
 
-build cmake_object_order_depends_target_Proyecto2_TankAttack: phony || CMakeFiles/Proyecto2_TankAttack.dir
+build cmake_object_order_depends_target_Proyecto2_TankAttack: phony || Proyecto2_TankAttack_autogen Proyecto2_TankAttack_autogen/mocs_compilation.cpp Proyecto2_TankAttack_autogen/timestamp Proyecto2_TankAttack_autogen_timestamp_deps
+
+build CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen/mocs_compilation.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
+  DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen/mocs_compilation.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always -fPIC
+  INCLUDES = -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtCharts -isystem /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include
+  OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
+  OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen
 
 build CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_TankAttack/main.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
   DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always -fPIC
-  INCLUDES = -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtCharts
+  INCLUDES = -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtCharts -isystem /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include
+  OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
+  OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
+
+build CMakeFiles/Proyecto2_TankAttack.dir/prueba.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_TankAttack/prueba.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
+  DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/prueba.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always -fPIC
+  INCLUDES = -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtCharts -isystem /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include
+  OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
+  OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
+
+build CMakeFiles/Proyecto2_TankAttack.dir/Tank.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_TankAttack/Tank.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
+  DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/Tank.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always -fPIC
+  INCLUDES = -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtCharts -isystem /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include
   OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
   OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
 
@@ -65,7 +89,7 @@ build CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.o: CXX_COMPILER__Proyecto2_Ta
 #############################################
 # Link the executable Proyecto2_TankAttack
 
-build Proyecto2_TankAttack: CXX_EXECUTABLE_LINKER__Proyecto2_TankAttack_Debug CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.o | /usr/lib/x86_64-linux-gnu/libQt5Charts.so.5.15.13 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.13 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13
+build Proyecto2_TankAttack: CXX_EXECUTABLE_LINKER__Proyecto2_TankAttack_Debug CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen/mocs_compilation.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/prueba.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Tank.cpp.o | /usr/lib/x86_64-linux-gnu/libQt5Charts.so.5.15.13 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.13 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13 || Proyecto2_TankAttack_autogen Proyecto2_TankAttack_autogen_timestamp_deps
   FLAGS = -g
   LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libQt5Charts.so.5.15.13  /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13  /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.13  /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13
   OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
@@ -96,6 +120,40 @@ build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
   restat = 1
 
 build rebuild_cache: phony CMakeFiles/rebuild_cache.util
+
+
+#############################################
+# Utility command for Proyecto2_TankAttack_autogen_timestamp_deps
+
+build Proyecto2_TankAttack_autogen_timestamp_deps: phony CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps
+
+
+#############################################
+# Utility command for Proyecto2_TankAttack_autogen
+
+build Proyecto2_TankAttack_autogen: phony CMakeFiles/Proyecto2_TankAttack_autogen Proyecto2_TankAttack_autogen/timestamp Proyecto2_TankAttack_autogen/mocs_compilation.cpp Proyecto2_TankAttack_autogen_timestamp_deps
+
+
+#############################################
+# Custom command for Proyecto2_TankAttack_autogen/timestamp
+
+build Proyecto2_TankAttack_autogen/timestamp Proyecto2_TankAttack_autogen/mocs_compilation.cpp | ${cmake_ninja_workdir}Proyecto2_TankAttack_autogen/timestamp ${cmake_ninja_workdir}Proyecto2_TankAttack_autogen/mocs_compilation.cpp: CUSTOM_COMMAND /usr/lib/qt5/bin/moc || Proyecto2_TankAttack_autogen_timestamp_deps
+  COMMAND = cd /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug && /opt/CLion/CLion-2024.1.4/clion-2024.1.4/bin/cmake/linux/x64/bin/cmake -E cmake_autogen /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/CMakeFiles/Proyecto2_TankAttack_autogen.dir/AutogenInfo.json Debug && /opt/CLion/CLion-2024.1.4/clion-2024.1.4/bin/cmake/linux/x64/bin/cmake -E touch /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/timestamp && /opt/CLion/CLion-2024.1.4/clion-2024.1.4/bin/cmake/linux/x64/bin/cmake -E cmake_transform_depfile Ninja gccdepfile /home/emanuel/CLionProjects/Proyecto2_TankAttack /home/emanuel/CLionProjects/Proyecto2_TankAttack /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/deps /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/CMakeFiles/d/55fbbf769998730b8ff11a60099abc64d091e9f41bc4e690fc0bf93dc2246fba.d
+  DESC = Automatic MOC for target Proyecto2_TankAttack
+  depfile = /home/emanuel/CLionProjects/Proyecto2_TankAttack/cmake-build-debug/CMakeFiles/d/55fbbf769998730b8ff11a60099abc64d091e9f41bc4e690fc0bf93dc2246fba.d
+  restat = 1
+
+
+#############################################
+# Phony custom command for CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps
+
+build CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps: phony /usr/lib/x86_64-linux-gnu/libQt5Charts.so.5.15.13 /usr/lib/qt5/bin/moc
+
+
+#############################################
+# Phony custom command for CMakeFiles/Proyecto2_TankAttack_autogen
+
+build CMakeFiles/Proyecto2_TankAttack_autogen | ${cmake_ninja_workdir}CMakeFiles/Proyecto2_TankAttack_autogen: phony Proyecto2_TankAttack_autogen/timestamp || Proyecto2_TankAttack_autogen_timestamp_deps
 
 # =============================================================================
 # Target aliases.
@@ -128,9 +186,16 @@ build /home/emanuel/CLionProjects/Proyecto2_TankAttack/CMakeLists.txt /opt/CLion
 
 
 #############################################
+# Clean additional files.
+
+build CMakeFiles/clean.additional: CLEAN_ADDITIONAL
+  CONFIG = Debug
+
+
+#############################################
 # Clean all the built files.
 
-build clean: CLEAN
+build clean: CLEAN CMakeFiles/clean.additional
 
 
 #############################################

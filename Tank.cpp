@@ -2,8 +2,8 @@
 #include <QDebug>
 
 Tank::Tank(int health, const QString &imagePath, QWidget *parent)
-    : health(health), label(new QLabel(parent)) {
-    // Cargar la imagen en QPixmap
+    : QWidget(parent), health(health), label(new QLabel(parent)), bullet(nullptr), bulletTimer(new QTimer(this)) {
+    // Cargar la imagen del tanque
     pixmap = QPixmap(imagePath);
 
     // Verificar si la imagen fue cargada correctamente
@@ -12,12 +12,17 @@ Tank::Tank(int health, const QString &imagePath, QWidget *parent)
     }
 }
 
-int Tank::getHealth() const {
-    return health;
-}
+void Tank::shoot(QWidget *collisionTarget) {
+    // Crear un nuevo proyectil si no existe ya
+    if (!bullet) {
+        bullet = new Bullet(label->x() + label->width() / 2 - 5, label->y() - 10, parentWidget());
+    }
 
-void Tank::setHealth(int newHealth) {
-    health = newHealth;
+    // Establecer el objetivo de colisión (en este caso, el blackRect)
+    bullet->setTarget(collisionTarget);
+
+    // Iniciar el disparo
+    bullet->start();
 }
 
 void Tank::display(QWidget *parent) {
@@ -29,8 +34,13 @@ void Tank::display(QWidget *parent) {
 
     // Ajustar la posición y tamaño del QLabel
     label->setAlignment(Qt::AlignCenter);
-    label->setGeometry(0, 100, 75, 75); // Puedes ajustar la posición como desees
-
-    // Mostrar el QLabel
+    label->setGeometry(500, 400, 75, 75);
     label->show();
+}
+
+void Tank::moveBullet() {
+    // Verificar si la bala existe y está activa
+    if (bullet) {
+        bullet->moveBullet();  // Delegar el movimiento a la clase Bullet
+    }
 }

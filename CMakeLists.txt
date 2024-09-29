@@ -13,7 +13,8 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS} ${Qt5Charts_INCLUDE_DIRS})
 
 add_executable(Proyecto2_TankAttack main.cpp
         prueba.cpp
-        Tank.cpp)
+        Tank.cpp
+        Bullet.cpp)
 
 # Enlazar las bibliotecas de Qt
 target_link_libraries(Proyecto2_TankAttack Qt5::Charts)

@@ -1,4 +1,5 @@
 #include "prueba.h"
+#include <QKeyEvent>
 #include <QDebug>
 
 ImageWindow::ImageWindow(QWidget *parent) : QWidget(parent) {
@@ -12,11 +13,18 @@ ImageWindow::ImageWindow(QWidget *parent) : QWidget(parent) {
     this->setFixedSize(1000, 700);
 
     // Crear un widget que representará el rectángulo negro en la parte superior
-    QWidget *blackRect = new QWidget(this);
-
-    // Definir el tamaño y la posición del rectángulo (ejemplo: 1000x100 píxeles en la parte superior)
-    blackRect->setGeometry(0, 0, 500, 100);
-
-    // Aplicar el color negro al widget
+    blackRect = new QWidget(this);  // Inicializamos blackRect aquí
+    blackRect->setGeometry(0, 0, 1000, 100);
     blackRect->setStyleSheet("background-color: black;");
+
+    // Asegurarse de que la ventana captura eventos de teclado
+    setFocusPolicy(Qt::StrongFocus);  // Esto permite que capture eventos de teclado
+}
+
+void ImageWindow::keyPressEvent(QKeyEvent *event) {
+    // Detectar si la tecla presionada es la barra espaciadora
+    if (event->key() == Qt::Key_Space) {
+        qDebug() << "Barra espaciadora presionada: disparo activado";
+        yellowTank->shoot(blackRect);  // Pasa el blackRect como objetivo de colisión
+    }
 }

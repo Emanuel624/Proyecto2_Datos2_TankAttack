@@ -23,7 +23,7 @@ public:
                 if (j < size - 1) addEdge(node, i * size + (j + 1)); // Conectar con el nodo de la derecha
             }
         }
-    }
+    }//hola
 
     // Método para agregar una arista entre dos nodos
     void addEdge(int u, int v) {

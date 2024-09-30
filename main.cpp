@@ -1,69 +1,72 @@
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGraphicsRectItem>
+#include <QtCore/QRandomGenerator>
+#include <QtGui/QBrush>
+#include <QtGui/QScreen> // Para obtener el tamaño de la pantalla
 
 class GridGraph {
 private:
-    int size; // Tamaño de la cuadrícula (N)
+    int rows; // Número de filas
+    int cols; // Número de columnas
     std::vector<std::vector<int>> adjMatrix; // Matriz de adyacencia
 
 public:
-    // Constructor que inicializa una cuadrícula de NxN
-    GridGraph(int n) : size(n), adjMatrix(n * n, std::vector<int>(n * n, 0)) {
-        // Conectar cada celda con sus vecinos
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                int node = i * size + j; // Nodo en la posición (i, j)
-                if (i > 0) addEdge(node, (i - 1) * size + j); // Conectar con el nodo de arriba
-                if (i < size - 1) addEdge(node, (i + 1) * size + j); // Conectar con el nodo de abajo
-                if (j > 0) addEdge(node, i * size + (j - 1)); // Conectar con el nodo de la izquierda
-                if (j < size - 1) addEdge(node, i * size + (j + 1)); // Conectar con el nodo de la derecha
-            }
-        }
-    }//hola
+    GridGraph(int rows, int cols) : rows(rows), cols(cols) {
+        adjMatrix.resize(rows * cols, std::vector<int>(rows * cols, 0));
+        generateConnections();
+    }
 
-    // Método para agregar una arista entre dos nodos
     void addEdge(int u, int v) {
         adjMatrix[u][v] = 1;
-        adjMatrix[v][u] = 1; // Grafo no dirigido
+        adjMatrix[v][u] = 1;
     }
 
-    // Método para verificar si dos nodos están conectados
-    bool isConnected(int u, int v) const {
-        return adjMatrix[u][v] == 1;
-    }
-
-    // Método para dibujar la cuadrícula en una escena de Qt
-    void drawGrid(QGraphicsScene& scene, int screenSize) {
-        int cellSize = screenSize / size; // Tamaño de cada celda
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                int x = j * cellSize; // Posición en X
-                int y = i * cellSize; // Posición en Y
-                // Dibujar la celda como un rectángulo
-                scene.addRect(x, y, cellSize, cellSize, QPen(Qt::black), QBrush(Qt::NoBrush));
+    void generateConnections() {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                int node = i * cols + j;
+                if (i > 0) addEdge(node, (i - 1) * cols + j); // Conectar con el nodo de arriba
+                if (i < rows - 1) addEdge(node, (i + 1) * cols + j); // Conectar con el nodo de abajo
+                if (j > 0) addEdge(node, i * cols + (j - 1)); // Conectar con el nodo de la izquierda
+                if (j < cols - 1) addEdge(node, i * cols + (j + 1)); // Conectar con el nodo de la derecha
             }
         }
     }
 
-    // Método para asegurar que el grafo es navegable
+    void drawGrid(QGraphicsScene& scene, int screenWidth, int screenHeight, float scaleFactor) {
+        // Calcular el tamaño de las celdas ajustado al tamaño de la pantalla
+        int cellWidth = (screenWidth / cols) * scaleFactor;
+        int cellHeight = (screenHeight / rows) * scaleFactor;
+        QBrush brush(QColor(205, 133, 63)); // Color café claro
+
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                int x = j * cellWidth;
+                int y = i * cellHeight;
+                scene.addRect(x, y, cellWidth, cellHeight, QPen(Qt::black), brush);
+            }
+        }
+    }
+
     bool isNavigable() const {
-        std::vector<bool> visited(size * size, false);
-        dfs(0, visited); // DFS desde el nodo 0 (parte superior izquierda)
+        std::vector<bool> visited(rows * cols, false);
+        dfs(0, visited);
         for (bool v : visited) {
-            if (!v) return false; // Si algún nodo no fue visitado, el grafo no es navegable
+            if (!v) return false;
         }
         return true;
     }
 
 private:
-    // Búsqueda en profundidad (DFS) para verificar conectividad
     void dfs(int node, std::vector<bool>& visited) const {
         visited[node] = true;
-        for (int i = 0; i < size * size; ++i) {
+        for (int i = 0; i < rows * cols; ++i) {
             if (adjMatrix[node][i] == 1 && !visited[i]) {
                 dfs(i, visited);
             }
@@ -74,21 +77,28 @@ private:
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    // Definir el tamaño de la pantalla
-    int screenSize = 800; // Tamaño de la ventana (puedes ajustar esto para pantalla completa)
-    int gridSize = 20; // Tamaño de la cuadrícula (20x20, por ejemplo)
+    // Obtener el tamaño real de la pantalla
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int screenWidth = screenGeometry.width();
+    int screenHeight = screenGeometry.height();
+
+    // Definir el número de filas y columnas basadas en el tamaño de la pantalla
+    int rows = 15;  // Definir cuántas filas quieres
+    int cols = 30;  // Definir cuántas columnas quieres
 
     // Crear una escena de Qt para dibujar el grafo
     QGraphicsScene scene;
-    scene.setSceneRect(0, 0, screenSize, screenSize);
+    scene.setSceneRect(0, 0, screenWidth, screenHeight);
 
-    // Crear el grafo basado en una cuadrícula de tamaño gridSize x gridSize
-    GridGraph graph(gridSize);
+    // Crear el grafo basado en una cuadrícula
+    GridGraph graph(rows, cols);
 
-    // Dibujar la cuadrícula en la escena
-    graph.drawGrid(scene, screenSize);
+    // Dibujar la cuadrícula (grafo) en la escena con un factor de escala (para reducir el tamaño de los nodos)
+    float scaleFactor = 0.8; // Reducir el tamaño de los nodos en un 80%
+    graph.drawGrid(scene, screenWidth, screenHeight, scaleFactor);
 
-    // Verificar si el grafo es navegable (solo para validación)
+    // Verificar si el grafo es navegable
     if (graph.isNavigable()) {
         std::cout << "El grafo es completamente navegable." << std::endl;
     } else {
@@ -97,10 +107,9 @@ int main(int argc, char *argv[]) {
 
     // Crear una vista para mostrar la escena
     QGraphicsView view(&scene);
-    view.setWindowTitle("Mapa del Grafo como Cuadrícula");
-    view.resize(screenSize, screenSize);
-    view.show();
+    view.setWindowTitle("Mapa del Grafo con Tamaño Ajustado a Pantalla");
+    view.resize(screenWidth, screenHeight); // Ajustar el tamaño de la ventana al tamaño de la pantalla
+    view.showFullScreen(); // Mostrar en pantalla completa
 
-    return app.exec(); // Ejecutar la aplicación de Qt
+    return app.exec();
 }
-

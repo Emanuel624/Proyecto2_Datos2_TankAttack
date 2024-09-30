@@ -14,7 +14,7 @@ class GridGraph {
 private:
     int rows; // Número de filas
     int cols; // Número de columnas
-    std::vector<std::vector<int>> adjMatrix; // Matriz de adyacencia
+    std::vector<std::vector<int>> adjMatrix;
 
 public:
     GridGraph(int rows, int cols) : rows(rows), cols(cols) {
@@ -84,8 +84,8 @@ int main(int argc, char *argv[]) {
     int screenHeight = screenGeometry.height();
 
     // Definir el número de filas y columnas basadas en el tamaño de la pantalla
-    int rows = 15;  // Definir cuántas filas quieres
-    int cols = 30;  // Definir cuántas columnas quieres
+    int rows = 15;  // Definir cuántas filas
+    int cols = 30;  // Definir cuántas columnas
 
     // Crear una escena de Qt para dibujar el grafo
     QGraphicsScene scene;

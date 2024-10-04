@@ -1,25 +1,35 @@
 #include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
+
+#include <cstring>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGraphicsRectItem>
 #include <QtCore/QRandomGenerator>
 #include <QtGui/QBrush>
-#include <QtGui/QScreen> // Para obtener el tamaño de la pantalla
+#include <QtGui/QScreen>
 
 class GridGraph {
 private:
     int rows; // Número de filas
     int cols; // Número de columnas
-    std::vector<std::vector<int>> adjMatrix;
+    int** adjMatrix; // Matriz de adyacencia
 
 public:
     GridGraph(int rows, int cols) : rows(rows), cols(cols) {
-        adjMatrix.resize(rows * cols, std::vector<int>(rows * cols, 0));
+        adjMatrix = new int*[rows * cols];
+        for (int i = 0; i < rows * cols; ++i) {
+            adjMatrix[i] = new int[rows * cols];
+            std::memset(adjMatrix[i], 0, rows * cols * sizeof(int));
+        }
         generateConnections();
+    }
+
+    // Liberar la memoria de la matriz de adyacencia
+    ~GridGraph() {
+        for (int i = 0; i < rows * cols; ++i) {
+            delete[] adjMatrix[i];
+        }
+        delete[] adjMatrix;
     }
 
     void addEdge(int u, int v) {
@@ -55,16 +65,21 @@ public:
     }
 
     bool isNavigable() const {
-        std::vector<bool> visited(rows * cols, false);
+        bool* visited = new bool[rows * cols];
+        std::memset(visited, false, rows * cols * sizeof(bool)); // Inicializar el arreglo a false
         dfs(0, visited);
-        for (bool v : visited) {
-            if (!v) return false;
+        for (int i = 0; i < rows * cols; ++i) {
+            if (!visited[i]) {
+                delete[] visited;
+                return false;
+            }
         }
+        delete[] visited;
         return true;
     }
 
 private:
-    void dfs(int node, std::vector<bool>& visited) const {
+    void dfs(int node, bool* visited) const {
         visited[node] = true;
         for (int i = 0; i < rows * cols; ++i) {
             if (adjMatrix[node][i] == 1 && !visited[i]) {
@@ -83,9 +98,9 @@ int main(int argc, char *argv[]) {
     int screenWidth = screenGeometry.width();
     int screenHeight = screenGeometry.height();
 
-    // Definir el número de filas y columnas basadas en el tamaño de la pantalla
-    int rows = 15;  // Definir cuántas filas
-    int cols = 30;  // Definir cuántas columnas
+    // Definir el número de filas y columnas
+    int rows = 15;
+    int cols = 30;
 
     // Crear una escena de Qt para dibujar el grafo
     QGraphicsScene scene;
@@ -94,7 +109,7 @@ int main(int argc, char *argv[]) {
     // Crear el grafo basado en una cuadrícula
     GridGraph graph(rows, cols);
 
-    // Dibujar la cuadrícula (grafo) en la escena con un factor de escala (para reducir el tamaño de los nodos)
+    // Reducir el tamaño de los nodos mediante escala
     float scaleFactor = 0.8; // Reducir el tamaño de los nodos en un 80%
     graph.drawGrid(scene, screenWidth, screenHeight, scaleFactor);
 
@@ -108,7 +123,7 @@ int main(int argc, char *argv[]) {
     // Crear una vista para mostrar la escena
     QGraphicsView view(&scene);
     view.setWindowTitle("Mapa del Grafo con Tamaño Ajustado a Pantalla");
-    view.resize(screenWidth, screenHeight); // Ajustar el tamaño de la ventana al tamaño de la pantalla
+    view.resize(screenWidth, screenHeight);
     view.showFullScreen(); // Mostrar en pantalla completa
 
     return app.exec();

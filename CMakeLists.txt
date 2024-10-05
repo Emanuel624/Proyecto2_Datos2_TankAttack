@@ -1,23 +1,19 @@
 cmake_minimum_required(VERSION 3.28)
 project(Proyecto2_TankAttack)
-set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/mingw_64/lib/cmake")
 
+# Estándar de C++ 17
 set(CMAKE_CXX_STANDARD 17)
 
-# Busca los módulos necesarios de Qt (Widgets y Charts)
+# Activa el automoc para que CMake procese los archivos con Qt MOC automáticamente
+set(CMAKE_AUTOMOC ON)
+
+# Busca los módulos necesarios de Qt6 (Widgets y Charts)
 find_package(Qt6 COMPONENTS Widgets Charts REQUIRED)
 
-# Incluye los directorios de Qt necesarios
-include_directories(${Qt5Widgets_INCLUDE_DIRS} ${Qt5Charts_INCLUDE_DIRS})
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
+# Agrega el ejecutable del proyecto
 add_executable(Proyecto2_TankAttack main.cpp
-        main.cpp)
+        GridGraph.cpp
+        Tank.cpp)
 
-# Enlazar las bibliotecas de Qt
+# Enlazar las bibliotecas de Qt6
 target_link_libraries(Proyecto2_TankAttack Qt6::Widgets Qt6::Charts)

@@ -13,7 +13,10 @@ find_package(Qt6 COMPONENTS Widgets Charts REQUIRED)
 # Agrega el ejecutable del proyecto
 add_executable(Proyecto2_TankAttack main.cpp
         GridGraph.cpp
-        Tank.cpp)
+        Tank.cpp
+        Player.cpp
+        PowerUp.cpp
+        PowerUpQueue.cpp)
 
 # Enlazar las bibliotecas de Qt6
 target_link_libraries(Proyecto2_TankAttack Qt6::Widgets Qt6::Charts)

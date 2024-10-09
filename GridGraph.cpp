@@ -1,7 +1,6 @@
 #include "GridGraph.h"
 #include "Tank.h"
 
-
 GridGraph::GridGraph(int rows, int cols) : rows(rows), cols(cols) {
     adjMatrix = new int*[rows * cols];
     for (int i = 0; i < rows * cols; ++i) {
@@ -53,6 +52,47 @@ void GridGraph::generateObstacles(float obstacleDensity) {
 }
 
 
+void GridGraph::generatePowerUps(QGraphicsScene& scene, float powerUpDensity, int cellWidth, int cellHeight) {
+    int totalCells = rows * cols;
+    int powerUpCount = totalCells * powerUpDensity;
+
+    QRandomGenerator* generator = QRandomGenerator::global();
+
+    for (int i = 0; i < powerUpCount; ++i) {
+        int row, col, node;
+
+        // Busca una celda vacía (sin obstáculo ni tanque)
+        do {
+            row = generator->bounded(rows);
+            col = generator->bounded(2, cols - 2); // Evita primeras y últimas columnas
+            node = row * cols + col;
+        } while (adjMatrix[node][node] == -1); // Repite si es obstáculo
+
+        // Crea un PowerUp aleatorio y lo coloca en la celda
+        PowerUp* powerUp;
+        int powerUpType = generator->bounded(4); // 4 tipos de PowerUps
+
+        switch (powerUpType) {
+            case 0:
+                powerUp = new DobleTurno("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/DoubleTurn.png", cellWidth, cellHeight);
+            break;
+            case 1:
+                powerUp = new PrecisionMovimiento("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Movement.png", cellWidth, cellHeight);
+            break;
+            case 2:
+                powerUp = new PrecisionAtaque("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/PresitionPowerUp.png", cellWidth, cellHeight);
+            break;
+            case 3:
+                powerUp = new PoderAtaque("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Damage+.png", cellWidth, cellHeight);
+            break;
+        }
+
+        // Ajusta la posición y añade el PowerUp a la escena
+        powerUp->setPos(col * cellWidth, row * cellHeight);
+        scene.addItem(powerUp);
+    }
+}
+
 void GridGraph::drawGrid(QGraphicsScene& scene, int screenWidth, int screenHeight, float scaleFactor) {
     int cellWidth = (screenWidth / cols) * scaleFactor;
     int cellHeight = (screenHeight / rows) * scaleFactor;
@@ -76,7 +116,6 @@ void GridGraph::drawGrid(QGraphicsScene& scene, int screenWidth, int screenHeigh
     }
 }
 
-
 // Metodo para agregar tanques al grid
 void GridGraph::addTank(Tank &tank, int row, int col, QGraphicsScene &scene, int cellWidth, int cellHeight) {
     // Verifica que la celda no esté ocupada por un obstáculo
@@ -89,9 +128,6 @@ void GridGraph::addTank(Tank &tank, int row, int col, QGraphicsScene &scene, int
     // Coloca el tanque en la celda especificada en la escena
     tank.display(scene, row, col, cellWidth, cellHeight);
 }
-
-
-
 
 bool GridGraph::isNavigable() const {
     bool* visited = new bool[rows * cols];

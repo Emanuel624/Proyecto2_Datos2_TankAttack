@@ -3,21 +3,20 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtGui/QScreen>
 #include "GridGraph.h"
-#include "Tank.h"
+#include "Player.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    int screenWidth = screenGeometry.width();
-    int screenHeight = screenGeometry.height();
+    // Definir el tamaño de la ventana
+    int viewWidth = 1500;
+    int viewHeight = 1000;
 
-    int rows = 15;
-    int cols = 30;
+    int rows = 10;
+    int cols = 20;
 
     QGraphicsScene scene;
-    scene.setSceneRect(0, 0, screenWidth, screenHeight);
+    scene.setSceneRect(0, 0, viewWidth, viewHeight);
 
     GridGraph graph(rows, cols);
 
@@ -26,39 +25,40 @@ int main(int argc, char *argv[]) {
     graph.generateObstacles(obstacleDensity);
 
     float scaleFactor = 0.8;
-    int cellWidth = (screenWidth / cols) * scaleFactor;
-    int cellHeight = (screenHeight / rows) * scaleFactor;
+    int cellWidth = (viewWidth / cols) * scaleFactor;
+    int cellHeight = (viewHeight / rows) * scaleFactor;
 
-    graph.drawGrid(scene, screenWidth, screenHeight, scaleFactor);
+    graph.drawGrid(scene, viewWidth, viewHeight, scaleFactor);
 
-    //Tanques jugador 1
-    Tank player1TankRed1(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png");
-    Tank player1TankRed2(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png");
-    Tank player1TankBlue1(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png");
-    Tank player1TankBlue2(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png");
+    // Crear jugadores y asignar tanques con salud e imagen
+    Player player1(1, "Player 1");
+    player1.setTank(0, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png");
+    player1.setTank(1, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png");
+    player1.setTank(2, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png");
+    player1.setTank(3, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png");
 
+    Player player2(2, "Player 2");
+    player2.setTank(0, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png");
+    player2.setTank(1, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png");
+    player2.setTank(2, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png");
+    player2.setTank(3, 100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png");
 
-    //Tanques jugador 2
-    Tank player2TankYellow1(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png");
-    Tank player2TankYellow2(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png");
-    Tank player2TankLight1(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png");
-    Tank player2TankLight2(100, "/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png");
+    // Colocar los tanques en el grid
+    for (int i = 0; i < 4; ++i) {
+        graph.addTank(*player1.getTank(i), i * 2 + 1, 0, scene, cellWidth, cellHeight);     // Tanques jugador 1 en la izquierda
+        graph.addTank(*player2.getTank(i), i * 2 + 1, cols - 1, scene, cellWidth, cellHeight); // Tanques jugador 2 en la derecha
+    }
 
-
-    // Colocar los tanques en diferentes celdas del grid
-    graph.addTank(player1TankRed1, 2, 0, scene, cellWidth, cellHeight);
-    graph.addTank(player1TankRed2, 5, 1, scene, cellWidth, cellHeight);
-    graph.addTank(player1TankBlue1, 9, 0, scene, cellWidth, cellHeight);
-    graph.addTank(player1TankBlue2, 12, 1, scene, cellWidth, cellHeight);
-
-    graph.addTank(player2TankYellow1, 2, 29, scene, cellWidth, cellHeight);
-    graph.addTank(player2TankYellow2, 5, 28, scene, cellWidth, cellHeight);
-    graph.addTank(player2TankLight1, 9, 29, scene, cellWidth, cellHeight);
-    graph.addTank(player2TankLight2, 12, 28, scene, cellWidth, cellHeight);
+    // Generar los PowerUps en celdas disponibles
+    float powerUpDensity = 0.02; // Un 2% de las celdas
+    graph.generatePowerUps(scene, powerUpDensity, cellWidth, cellHeight);
 
     QGraphicsView view(&scene);
     view.setWindowTitle("Tank Attack!");
-    view.showFullScreen();
+
+    // Ajustar el tamaño de la ventana
+    view.resize(viewWidth, viewHeight);
+    view.show(); // Mostrar con tamaño ajustado, sin pantalla completa
 
     return app.exec();
 }

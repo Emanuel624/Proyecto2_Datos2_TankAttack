@@ -1,6 +1,7 @@
 #include "GridGraph.h"
 #include "Tank.h"
 
+//Constructor
 GridGraph::GridGraph(int rows, int cols) : rows(rows), cols(cols) {
     adjMatrix = new int*[rows * cols];
     for (int i = 0; i < rows * cols; ++i) {
@@ -10,6 +11,7 @@ GridGraph::GridGraph(int rows, int cols) : rows(rows), cols(cols) {
     generateConnections();
 }
 
+//Desctructor
 GridGraph::~GridGraph() {
     for (int i = 0; i < rows * cols; ++i) {
         delete[] adjMatrix[i];
@@ -17,11 +19,7 @@ GridGraph::~GridGraph() {
     delete[] adjMatrix;
 }
 
-void GridGraph::addEdge(int u, int v) {
-    adjMatrix[u][v] = 1;
-    adjMatrix[v][u] = 1;
-}
-
+//Generar conexiones entre nodos
 void GridGraph::generateConnections() {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
@@ -34,6 +32,14 @@ void GridGraph::generateConnections() {
     }
 }
 
+//Agregar aristas al grafo
+void GridGraph::addEdge(int u, int v) {
+    adjMatrix[u][v] = 1;
+    adjMatrix[v][u] = 1;
+}
+
+
+//Genera nodos del grafo con -1, que se toman como obstaculos
 void GridGraph::generateObstacles(float obstacleDensity) {
     QRandomGenerator* generator = QRandomGenerator::global();
     for (int i = 0; i < rows; ++i) {
@@ -51,7 +57,13 @@ void GridGraph::generateObstacles(float obstacleDensity) {
     }
 }
 
+//Comprueba si el nodo tiene un obstuculo
+bool GridGraph::isObstacle(int row, int col) const {
+    int node = row * cols + col;
+    return adjMatrix[node][node] == -1;
+}
 
+//Genera PowerUps aleatorios en el mapa
 void GridGraph::generatePowerUps(QGraphicsScene& scene, float powerUpDensity, int cellWidth, int cellHeight) {
     int totalCells = rows * cols;
     int powerUpCount = totalCells * powerUpDensity;
@@ -93,6 +105,7 @@ void GridGraph::generatePowerUps(QGraphicsScene& scene, float powerUpDensity, in
     }
 }
 
+//Dibuja el grafo en la ventana
 void GridGraph::drawGrid(QGraphicsScene& scene, int screenWidth, int screenHeight, float scaleFactor) {
     int cellWidth = (screenWidth / cols) * scaleFactor;
     int cellHeight = (screenHeight / rows) * scaleFactor;
@@ -116,6 +129,140 @@ void GridGraph::drawGrid(QGraphicsScene& scene, int screenWidth, int screenHeigh
     }
 }
 
+//Implementacion BFS
+int* GridGraph::bfs(int startNode, int targetNode, int& pathLength) {
+    bool* visited = new bool[rows * cols];
+    int* parent = new int[rows * cols];
+    std::memset(visited, false, rows * cols * sizeof(bool));
+    std::memset(parent, -1, rows * cols * sizeof(int));
+
+    Queue q(rows * cols);
+    visited[startNode] = true;
+    q.enqueue(startNode);
+
+    while (!q.isEmpty()) {
+        int current = q.dequeue();
+        if (current == targetNode) break;
+
+        for (int i = 0; i < rows * cols; ++i) {
+            if (adjMatrix[current][i] == 1 && !visited[i]) {
+                visited[i] = true;
+                parent[i] = current;
+                q.enqueue(i);
+            }
+        }
+    }
+
+    pathLength = 0;
+    int* path = new int[rows * cols];
+    for (int at = targetNode; at != -1; at = parent[at]) {
+        path[pathLength++] = at;
+    }
+
+    for (int i = 0; i < pathLength / 2; ++i) {
+        int temp = path[i];
+        path[i] = path[pathLength - 1 - i];
+        path[pathLength - 1 - i] = temp;
+    }
+
+    delete[] visited;
+    delete[] parent;
+    return path;
+}
+
+//Implementacion Dijikstra
+int* GridGraph::dijkstra(int startNode, int targetNode, int& pathLength) {
+    const int INF = std::numeric_limits<int>::max();
+    bool* visited = new bool[rows * cols];
+    int* distance = new int[rows * cols];
+    int* parent = new int[rows * cols];
+
+    std::memset(visited, false, rows * cols * sizeof(bool));
+    std::fill_n(distance, rows * cols, INF);
+    std::memset(parent, -1, rows * cols * sizeof(int));
+
+    distance[startNode] = 0;
+    PriorityQueue pq(rows * cols);
+    pq.enqueue(startNode, 0);
+
+    while (!pq.isEmpty()) {
+        int current = pq.dequeue();
+        if (visited[current]) continue;
+        visited[current] = true;
+
+        for (int i = 0; i < rows * cols; ++i) {
+            if (adjMatrix[current][i] > 0) {
+                int newDist = distance[current] + adjMatrix[current][i];
+                if (newDist < distance[i]) {
+                    distance[i] = newDist;
+                    parent[i] = current;
+                    pq.enqueue(i, newDist);
+                }
+            }
+        }
+    }
+
+    pathLength = 0;
+    int* path = new int[rows * cols];
+    for (int at = targetNode; at != -1; at = parent[at]) {
+        path[pathLength++] = at;
+    }
+
+    for (int i = 0; i < pathLength / 2; ++i) {
+        int temp = path[i];
+        path[i] = path[pathLength - 1 - i];
+        path[pathLength - 1 - i] = temp;
+    }
+
+    delete[] visited;
+    delete[] distance;
+    delete[] parent;
+    return path;
+}
+
+bool GridGraph::lineOfSight(int startRow, int startCol, int targetRow, int targetCol) {
+    // Basado en el algoritmo de Bresenham para dibujar líneas entre dos puntos
+    int dx = std::abs(targetCol - startCol);
+    int dy = std::abs(targetRow - startRow);
+
+    int sx = (startCol < targetCol) ? 1 : -1;
+    int sy = (startRow < targetRow) ? 1 : -1;
+
+    int err = dx - dy;
+
+    while (true) {
+        // Si el nodo actual es un obstáculo, no hay línea de vista
+        if (isObstacle(startRow, startCol)) {
+            return false;
+        }
+
+        // Si hemos llegado al destino, significa que hay línea de vista
+        if (startRow == targetRow && startCol == targetCol) {
+            return true;
+        }
+
+        // Actualizar las coordenadas de acuerdo al algoritmo de Bresenham
+        int e2 = 2 * err;
+
+        if (e2 > -dy) {
+            err -= dy;
+            startCol += sx;
+        }
+
+        if (e2 < dx) {
+            err += dx;
+            startRow += sy;
+        }
+
+        // Verificar los límites del mapa
+        if (startRow < 0 || startRow >= rows || startCol < 0 || startCol >= cols) {
+            return false;
+        }
+    }
+}
+
+
+
 // Metodo para agregar tanques al grid
 void GridGraph::addTank(Tank &tank, int row, int col, QGraphicsScene &scene, int cellWidth, int cellHeight) {
     // Verifica que la celda no esté ocupada por un obstáculo
@@ -129,6 +276,7 @@ void GridGraph::addTank(Tank &tank, int row, int col, QGraphicsScene &scene, int
     tank.display(scene, row, col, cellWidth, cellHeight);
 }
 
+//Revisar que el grafo es navegable
 bool GridGraph::isNavigable() const {
     bool* visited = new bool[rows * cols];
     std::memset(visited, false, rows * cols * sizeof(bool));
@@ -143,6 +291,7 @@ bool GridGraph::isNavigable() const {
     return true;
 }
 
+//Dfs para revisar si es navegable
 void GridGraph::dfs(int node, bool* visited) const {
     visited[node] = true;
     for (int i = 0; i < rows * cols; ++i) {

@@ -6,6 +6,8 @@
 #include "GridGraph.h"
 #include "Player.h"
 #include "CustomView.h"
+#include "PowerUp.h"
+
 
 // Variable global para controlar el turno
 int currentPlayerTurn = 0;
@@ -31,16 +33,56 @@ void switchTurn(Player& player1, Player& player2, QWidget* parent) {
     // Resetear las acciones del jugador anterior
     if (currentPlayerTurn == player1.getId()) {
         player1.resetActions();  // Reiniciar acciones al cambiar de turno
+        // Reset precision movement for player1's tanks
+        for (int i = 0; i < 4; ++i) {
+            Tank* tank = player1.getTank(i);
+            if (tank) {
+                tank->setPrecisionMovimientoEffect(false);  // Reset after the turn
+            }
+        }
     } else {
         player2.resetActions();
+        // Reset precision movement for player2's tanks
+        for (int i = 0; i < 4; ++i) {
+            Tank* tank = player2.getTank(i);
+            if (tank) {
+                tank->setPrecisionMovimientoEffect(false);  // Reset after the turn
+            }
+        }
     }
 
-    // Cambiar el turno
+    // Change the current player's turn
     currentPlayerTurn = (currentPlayerTurn == player1.getId()) ? player2.getId() : player1.getId();
     QString nextPlayerName = (currentPlayerTurn == player1.getId()) ? QString::fromStdString(player1.getName()) : QString::fromStdString(player2.getName());
     QMessageBox::information(parent, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
 }
 
+
+// Función para generar un PowerUp aleatorio
+PowerUp* generateRandomPowerUp(int cellWidth, int cellHeight) {
+    int powerUpType = QRandomGenerator::global()->bounded(4);  // Generar un número aleatorio entre 0 y 3
+    switch (powerUpType) {
+        case 0:
+            return new DobleTurno(cellWidth, cellHeight);
+        case 1:
+            return new PrecisionMovimiento(cellWidth, cellHeight);
+        case 2:
+            return new PrecisionAtaque(cellWidth, cellHeight);
+        case 3:
+            default:
+                return new PoderAtaque(cellWidth, cellHeight);
+    }
+}
+
+// Función para asignar PowerUps aleatorios a un jugador
+void assignRandomPowerUpsToPlayer(Player& player, int numberOfPowerUps, int cellWidth, int cellHeight) {
+    for (int i = 0; i < numberOfPowerUps; ++i) {
+        PowerUp* powerUp = generateRandomPowerUp(cellWidth, cellHeight);
+        player.addPowerUp(powerUp);  // Añadir el PowerUp a la cola del jugador
+    }
+}
+
+//Funcion que ejecuta el programa.
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
@@ -88,12 +130,30 @@ int main(int argc, char *argv[]) {
         graph.addTank(*player2.getTank(i), i * 3, cols - 1, scene, cellWidth, cellHeight);  // Tanques jugador 2 a la derecha
     }
 
-    // Generar PowerUps aleatorios
-    float powerUpDensity = 0.02;
-    graph.generatePowerUps(scene, powerUpDensity, cellWidth, cellHeight);
+    // Asignar PowerUps aleatorios a ambos jugadores
+    int numberOfPowerUpsPerPlayer = 4;  // Puedes ajustar el número de PowerUps que recibe cada jugador
+    assignRandomPowerUpsToPlayer(player1, numberOfPowerUpsPerPlayer, cellWidth, cellHeight);
+    assignRandomPowerUpsToPlayer(player2, numberOfPowerUpsPerPlayer, cellWidth, cellHeight);
 
-    // Crear la vista personalizada
-    CustomView view(&scene, graph, cellWidth, cellHeight);
+    // Crear un QFont para usarlo con texto en negrita
+    QFont boldFont;
+    boldFont.setBold(true);
+
+    // Añadir texto de "Jugador 1" y "Jugador 2" en la escena y aplicar el estilo en negrita
+    QGraphicsTextItem* player1Label = scene.addText("Jugador 1");
+    player1Label->setFont(boldFont);  // Aplicar fuente en negrita
+    player1Label->setPos(viewWidth + 10, 10);  // Posición para el texto del jugador 1
+
+    QGraphicsTextItem* player2Label = scene.addText("Jugador 2");
+    player2Label->setFont(boldFont);  // Aplicar fuente en negrita
+    player2Label->setPos(viewWidth + 10, 260);  // Posición para el texto del jugador 2
+
+    // Mostrar los PowerUps de cada jugador en la escena
+    player1.showPowerUpsOnScene(&scene, viewWidth + 10, 50);  // Posición de los PowerUps del jugador 1
+    player2.showPowerUpsOnScene(&scene, viewWidth + 10, 300);  // Posición de los PowerUps del jugador 2
+
+    // Crear la vista personalizada (aquí se pasa player1, player2, y currentPlayerTurn)
+    CustomView view(&scene, graph, cellWidth, cellHeight, player1, player2, currentPlayerTurn);
     view.setWindowTitle("Tank Attack!");
     view.resize(viewWidth, viewHeight);
     view.show(); // Mostrar la vista
@@ -124,3 +184,4 @@ int main(int argc, char *argv[]) {
 
     return app.exec();
 }
+

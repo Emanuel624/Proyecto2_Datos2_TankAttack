@@ -2,20 +2,31 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QRandomGenerator>
 #include <QDebug>
+#include <QMessageBox>  // Incluir QMessageBox para mostrar mensajes
 
 // Constructor
-CustomView::CustomView(QGraphicsScene* scene, GridGraph& graph, int cellWidth, int cellHeight, QWidget* parent)
-    : QGraphicsView(scene, parent), graph(graph), cellWidth(cellWidth), cellHeight(cellHeight), selectedTank(nullptr), routeLines(nullptr), routeSize(0) {
+// Updated Constructor
+CustomView::CustomView(QGraphicsScene* scene, GridGraph& graph, int cellWidth, int cellHeight, Player& player1, Player& player2, int& currentPlayerTurn, QWidget* parent)
+    : QGraphicsView(scene, parent),
+      graph(graph),
+      cellWidth(cellWidth),
+      cellHeight(cellHeight),
+      player1(player1),
+      player2(player2),
+      currentPlayerTurn(currentPlayerTurn),
+      selectedTank(nullptr),
+      routeLines(nullptr),
+      routeSize(0) {
     setRenderHint(QPainter::Antialiasing);
 }
 
-// Método para seleccionar un tanque
+// Metodo para seleccionar un tanque
 void CustomView::selectTank(Tank* tank) {
     clearRouteLines();  // Borrar la ruta anterior si existe
     selectedTank = tank;
 }
 
-// Reimplementación del método mousePressEvent
+// Reimplementación del metodo mousePressEvent
 void CustomView::mousePressEvent(QMouseEvent* event) {
     if (selectedTank) {
         // Obtener la posición del clic en la escena
@@ -61,6 +72,43 @@ void CustomView::mousePressEvent(QMouseEvent* event) {
     }
 }
 
+// CustomView class - handle key events
+void CustomView::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Shift) {
+        // Check whose turn it is
+        if (currentPlayerTurn == player1.getId()) {
+            // Player 1 uses a power-up
+            player1.useNextPowerUp(scene(), 1510, 50); // Actualiza la escena con el uso del PowerUp del Jugador 1
+
+            // Reset actions and update the power-ups on screen
+            player1.resetActions();
+            player1.clearPowerUpsFromScene(scene(), 1510, 50); // Limpiar la representación anterior de los PowerUps
+            player1.showPowerUpsOnScene(scene(), 1510, 50);    // Volver a dibujar la lista actualizada de PowerUps
+
+            // Switch turn after using the power-up
+            currentPlayerTurn = player2.getId();
+            QString nextPlayerName = QString::fromStdString(player2.getName());
+            QMessageBox::information(this, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
+
+        } else {
+            // Player 2 uses a power-up
+            player2.useNextPowerUp(scene(), 1510, 300); // Actualiza la escena con el uso del PowerUp del Jugador 2
+
+            // Reset actions and update the power-ups on screen
+            player2.resetActions();
+            player2.clearPowerUpsFromScene(scene(), 1510, 300); // Limpiar la representación anterior de los PowerUps
+            player2.showPowerUpsOnScene(scene(), 1510, 300);    // Volver a dibujar la lista actualizada de PowerUps
+
+            // Switch turn after using the power-up
+            currentPlayerTurn = player1.getId();
+            QString nextPlayerName = QString::fromStdString(player1.getName());
+            QMessageBox::information(this, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
+        }
+    }
+
+    // Call the base class's keyPressEvent to ensure other key events are handled
+    QGraphicsView::keyPressEvent(event);
+}
 
 
 

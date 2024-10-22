@@ -3,6 +3,7 @@
 
 #include <string>
 #include "PowerUpQueue.h"
+#include "PowerUp.h"  // Asegurarse de incluir PowerUp
 #include "Tank.h"
 
 class Player {
@@ -13,10 +14,15 @@ public:
     void setTank(int index, int health, const QString& imagePath, int type);
     Tank* getTank(int index) const;
     int getId();
-    std::string getName();  // Método getName
+    std::string getName();  // Metodo getName
 
     void addPowerUp(PowerUp* powerUp);
     PowerUp* usePowerUp();
+    void showPowerUps() const;
+    void showPowerUpsOnScene(QGraphicsScene* scene, int xPosition, int yPosition);
+    void clearPowerUpsFromScene(QGraphicsScene* scene, int xPosition, int yPosition);
+    void useNextPowerUp(QGraphicsScene* scene, int xPosition, int yPosition);
+
 
     // Nuevos métodos para control de acciones del turno
     bool hasMoved() const;

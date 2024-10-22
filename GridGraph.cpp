@@ -63,47 +63,6 @@ bool GridGraph::isObstacle(int row, int col) const {
     return adjMatrix[node][node] == -1;
 }
 
-//Genera PowerUps aleatorios en el mapa
-void GridGraph::generatePowerUps(QGraphicsScene& scene, float powerUpDensity, int cellWidth, int cellHeight) {
-    int totalCells = rows * cols;
-    int powerUpCount = totalCells * powerUpDensity;
-
-    QRandomGenerator* generator = QRandomGenerator::global();
-
-    for (int i = 0; i < powerUpCount; ++i) {
-        int row, col, node;
-
-        // Busca una celda vacía (sin obstáculo ni tanque)
-        do {
-            row = generator->bounded(rows);
-            col = generator->bounded(2, cols - 2); // Evita primeras y últimas columnas
-            node = row * cols + col;
-        } while (adjMatrix[node][node] == -1); // Repite si es obstáculo
-
-        // Crea un PowerUp aleatorio y lo coloca en la celda
-        PowerUp* powerUp;
-        int powerUpType = generator->bounded(4); // 4 tipos de PowerUps
-
-        switch (powerUpType) {
-            case 0:
-                powerUp = new DobleTurno("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/DoubleTurn.png", cellWidth, cellHeight);
-            break;
-            case 1:
-                powerUp = new PrecisionMovimiento("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Movement.png", cellWidth, cellHeight);
-            break;
-            case 2:
-                powerUp = new PrecisionAtaque("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/PresitionPowerUp.png", cellWidth, cellHeight);
-            break;
-            case 3:
-                powerUp = new PoderAtaque("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Damage+.png", cellWidth, cellHeight);
-            break;
-        }
-
-        // Ajusta la posición y añade el PowerUp a la escena
-        powerUp->setPos(col * cellWidth, row * cellHeight);
-        scene.addItem(powerUp);
-    }
-}
 
 //Dibuja el grafo en la ventana
 void GridGraph::drawGrid(QGraphicsScene& scene, int screenWidth, int screenHeight, float scaleFactor) {

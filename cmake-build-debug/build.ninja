@@ -219,7 +219,7 @@ build Proyecto2_TankAttack_autogen/timestamp Proyecto2_TankAttack_autogen/mocs_c
 #############################################
 # Phony custom command for CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps
 
-build CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps: phony /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Charts.so.6.4.2 /usr/lib/qt6/libexec/moc
+build CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps: phony /usr/lib/x86_64-linux-gnu/libQt6Charts.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2 /usr/lib/qt6/libexec/moc
 
 
 #############################################

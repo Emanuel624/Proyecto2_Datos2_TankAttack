@@ -19,20 +19,32 @@ Tank::Tank(int health, const QString &imagePath, int type)
     setPixmap(pixmap);
 }
 
+void Tank::setPrecisionMovimientoEffect(bool isActive) {
+    precisionMovimientoActive = isActive;
+}
+
+
 // Seleccionar el tipo de movimiento del tanque basado en su tipo y probabilidad
 int Tank::selectMovementForTank() const {
-    int probability = QRandomGenerator::global()->bounded(100); // Genera un número aleatorio entre 0 y 99
+    int probability = QRandomGenerator::global()->bounded(100); // Generates a random number between 0 and 99
 
-    // Tanques celeste/azul
-    if (Tank_type == 1) {
-        return (probability < 50) ? 0 : 2; // 50% BFS, 50% Línea Vista
+    if (precisionMovimientoActive) {
+        // 90% BFS/Dijkstra and 10% random movement
+        std::cout << "90% SI"<< std::endl;
+        if (probability < 90) {
+            return (Tank_type == 0) ? 0 : 1;  // 0 for BFS, 1 for Dijkstra
+        } else {
+            return 2;  // 10% random movement (Línea de Vista or other)
+        }
+    } else {
+        // Original logic based on Tank_type
+        if (Tank_type == 0) {
+            return (probability < 50) ? 0 : 2; // 50% BFS, 50% Línea Vista
+        } else if (Tank_type == 1) {
+            return (probability < 80) ? 1 : 2; // 80% Dijkstra, 20% Línea Vista
+        }
+        return 2;  // Default to Línea Vista if error
     }
-    // Tanques amarillo/rojo
-    if (Tank_type == 0) {
-        return (probability < 80) ? 1 : 2; // 80% Dijkstra, 20% Línea Vista
-    }
-
-    return 2; // Default a Línea Vista si hay algún error
 }
 
 void Tank::display(QGraphicsScene &scene, int row, int col, int cellWidth, int cellHeight) {

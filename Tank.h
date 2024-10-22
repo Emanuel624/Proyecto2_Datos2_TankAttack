@@ -38,6 +38,8 @@ public:
     int currentRow;
     int currentCol;
 
+    void setPrecisionMovimientoEffect(bool isActive);
+
     signals:
         void tankSelected(Tank* tank);  // Señal para notificar que un tanque ha sido seleccionado
         void movementCompleted();
@@ -50,6 +52,7 @@ private:
     int Tank_type;
     QPixmap pixmap;      // Imagen que representa al tanque
     QLabel *label;       // QLabel para mostrar la imagen del tanque
+    bool precisionMovimientoActive = false;  // Flag to track if the power-up is active
 
 };
 

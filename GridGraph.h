@@ -32,7 +32,6 @@ public:
     void generateConnections();
     void drawGrid(QGraphicsScene& scene, int screenWidth, int screenHeight, float scaleFactor);
     void generateObstacles(float obstacleDensity);
-    void generatePowerUps(QGraphicsScene& scene, float powerUpDensity, int cellWidth, int cellHeight);
     void addTank(Tank &tank, int row, int col, QGraphicsScene &scene, int cellWidth, int cellHeight);
     bool isNavigable() const;
 

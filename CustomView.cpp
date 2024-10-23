@@ -1,7 +1,9 @@
+
 #include "CustomView.h"
 #include <QGraphicsSceneMouseEvent>
-#include <QRandomGenerator>
 #include <QDebug>
+#include <QRandomGenerator>
+
 
 // Constructor
 CustomView::CustomView(QGraphicsScene* scene, GridGraph& graph, int cellWidth, int cellHeight, QWidget* parent)
@@ -15,9 +17,17 @@ void CustomView::selectTank(Tank* tank) {
     selectedTank = tank;
 }
 
+// Método para obtener el tanque seleccionado
+Tank* CustomView::getSelectedTank() const {
+    return selectedTank;
+}
+
 // Reimplementación del método mousePressEvent
 void CustomView::mousePressEvent(QMouseEvent* event) {
-    if (selectedTank) {
+    if (event->button() == Qt::RightButton) {
+        // Emitir la señal de click derecho con la posición del ratón en la escena
+        emit rightClick(mapToScene(event->pos()));
+    } else if (selectedTank) {
         // Obtener la posición del clic en la escena
         QPointF scenePos = mapToScene(event->pos());
         int targetCol = static_cast<int>(scenePos.x()) / cellWidth;
@@ -27,7 +37,7 @@ void CustomView::mousePressEvent(QMouseEvent* event) {
         int movementType = selectedTank->selectMovementForTank(); // Decidir entre BFS, Dijkstra o Línea Vista
 
         int pathLength;
-        int startNode = selectedTank->currentRow * graph.getCols() + selectedTank->currentCol;
+        int startNode = selectedTank->getCurrentRow() * graph.getCols() + selectedTank->getCurrentCol();
         int targetNode = targetRow * graph.getCols() + targetCol;
 
         int* path = nullptr;
@@ -43,7 +53,7 @@ void CustomView::mousePressEvent(QMouseEvent* event) {
         } else {
             // Usar Línea Vista
             qDebug() << "Usando Línea Vista para mover el tanque.";
-            path = PathfindingLineaVista::lineaVista(graph, selectedTank->currentRow, selectedTank->currentCol, targetRow, targetCol, pathLength, selectedTank, *scene(), cellWidth, cellHeight);
+            path = PathfindingLineaVista::lineaVista(graph, selectedTank->getCurrentRow(), selectedTank->getCurrentCol(), targetRow, targetCol, pathLength, selectedTank, *scene(), cellWidth, cellHeight);
         }
 
         // Mover el tanque y dibujar la ruta con el mismo camino
@@ -60,9 +70,6 @@ void CustomView::mousePressEvent(QMouseEvent* event) {
         QGraphicsView::mousePressEvent(event);
     }
 }
-
-
-
 
 // Método para borrar las líneas de la ruta anterior
 void CustomView::clearRouteLines() {

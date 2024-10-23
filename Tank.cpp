@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QLabel>
 #include <QThread>
+#include "Bullet.h"  // Incluir Bullet
+
 
 // Constructor para inicializar el tanque con vida, imagen y tipo
 Tank::Tank(int health, const QString &imagePath, int type)
@@ -18,6 +20,22 @@ Tank::Tank(int health, const QString &imagePath, int type)
     }
     setPixmap(pixmap);
 }
+
+
+// Método para disparar desde el tanque
+void Tank::shoot(QGraphicsScene* scene, GridGraph* graph, int targetRow, int targetCol, int cellWidth, int cellHeight) {
+    // Crear la bala como un punto (círculo negro)
+    Bullet* bullet = new Bullet(graph, currentRow, currentCol, targetRow, targetCol);
+
+    // Iniciar el movimiento de la bala
+    bullet->startMovement(scene, cellWidth, cellHeight);
+
+    // Conectar la señal cuando el movimiento de la bala ha terminado para pasar al siguiente turno
+    connect(bullet, &Bullet::movementCompleted, [this]() {
+        emit movementCompleted();  // Pasar el turno una vez que la bala complete su movimiento
+    });
+}
+
 
 // Seleccionar el tipo de movimiento del tanque basado en su tipo y probabilidad
 int Tank::selectMovementForTank() const {
@@ -33,6 +51,13 @@ int Tank::selectMovementForTank() const {
     }
 
     return 2; // Default a Línea Vista si hay algún error
+}
+int Tank::getCurrentRow() const {
+    return currentRow;
+}
+
+int Tank::getCurrentCol() const {
+    return currentCol;
 }
 
 void Tank::display(QGraphicsScene &scene, int row, int col, int cellWidth, int cellHeight) {
@@ -53,9 +78,6 @@ void Tank::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     // Mostrar las coordenadas del clic en la escena
     QPointF clickPos = event->scenePos();
     qDebug() << "Coordenadas del clic: (" << clickPos.x() << "," << clickPos.y() << ")";
-
-    // Llamar a la implementación base para asegurarse de que se manejen otros eventos
-    QGraphicsPixmapItem::mousePressEvent(event);
 }
 
 // Movimiento del tanque, basado en el algoritmo seleccionado
@@ -95,6 +117,3 @@ void Tank::moveToPath(GridGraph &graph, int* path, int pathLength, QGraphicsScen
         qDebug() << "No se encontró un camino para mover el tanque.";
     }
 }
-
-
-

@@ -22,7 +22,12 @@ add_executable(Proyecto2_TankAttack main.cpp
         Queue.cpp
         PathfindingDijkstra.cpp
         CustomView.cpp
-        PathfindingLineaVista.cpp)
+        PathfindingLineaVista.cpp
+        Bullet.cpp
+        main.cpp
+        main.cpp
+
+)
 
 # Enlazar las bibliotecas de Qt6
 target_link_libraries(Proyecto2_TankAttack Qt6::Widgets Qt6::Charts)

@@ -86,16 +86,16 @@ void GridGraph::generatePowerUps(QGraphicsScene& scene, float powerUpDensity, in
 
         switch (powerUpType) {
             case 0:
-                powerUp = new DobleTurno("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/DoubleTurn.png", cellWidth, cellHeight);
+                powerUp = new DobleTurno("C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/DoubleTurn.png", cellWidth, cellHeight);
             break;
             case 1:
-                powerUp = new PrecisionMovimiento("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Movement.png", cellWidth, cellHeight);
+                powerUp = new PrecisionMovimiento("C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Movement.png", cellWidth, cellHeight);
             break;
             case 2:
-                powerUp = new PrecisionAtaque("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/PresitionPowerUp.png", cellWidth, cellHeight);
+                powerUp = new PrecisionAtaque("C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/PresitionPowerUp.png", cellWidth, cellHeight);
             break;
             case 3:
-                powerUp = new PoderAtaque("/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Damage+.png", cellWidth, cellHeight);
+                powerUp = new PoderAtaque("C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/PowerUps/Damage+.png", cellWidth, cellHeight);
             break;
         }
 

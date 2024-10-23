@@ -12,6 +12,10 @@ class CustomView : public QGraphicsView {
 public:
     CustomView(QGraphicsScene* scene, GridGraph& graph, int cellWidth, int cellHeight, QWidget* parent = nullptr);
     void selectTank(Tank* tank);
+    Tank* getSelectedTank() const;  // Método para obtener el tanque seleccionado
+
+    signals:
+        void rightClick(QPointF pos);  // Señal para detectar el click derecho
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;

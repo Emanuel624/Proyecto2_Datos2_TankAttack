@@ -14,8 +14,9 @@ public:
     void selectTank(Tank* tank);
     Tank* getSelectedTank() const;  // Método para obtener el tanque seleccionado
 
-    signals:
-        void rightClick(QPointF pos);  // Señal para detectar el click derecho
+signals:
+    void rightClick(QPointF pos);  // Señal para detectar el click derecho
+    void turnEnded();  // Señal para indicar que el turno ha terminado
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -28,8 +29,8 @@ private:
     QGraphicsLineItem** routeLines; // Arreglo dinámico de líneas para mostrar la ruta
     int routeSize;                 // Tamaño actual del arreglo de líneas
 
-    void clearRouteLines();        // Metodo para borrar las líneas de la ruta
-    void drawRoute(int* path, int pathLength); // Metodo para dibujar la ruta desde un arreglo
+    void clearRouteLines();        // Método para borrar las líneas de la ruta
+    void drawRoute(int* path, int pathLength); // Método para dibujar la ruta desde un arreglo
 };
 
 #endif // CUSTOMVIEW_H

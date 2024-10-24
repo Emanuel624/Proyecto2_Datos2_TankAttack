@@ -27,6 +27,7 @@ public:
     bool shouldUseBFS() const;
     int selectMovementForTank() const;
 
+
     // Metodo para mostrar el tanque en la ventana
     void display(QGraphicsScene &scene, int row, int col, int cellWidth, int cellHeight);
 
@@ -49,6 +50,7 @@ private:
     QPixmap pixmap;
     int currentRow;
     int currentCol;
+    // Columna actual
 };
 
 #endif // TANK_H

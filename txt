@@ -1,0 +1,457 @@
+Necesito tu ayuda para implementar una nueva funcionalidad en el proyecto, estoy usando la librería Qt en CLion.Te voy a explicar lo que quiero que implementes.
+
+Los tanques de mi juego tienen tienen la capacidad de disparar, el jugador selecciona el tanque que va a disprar con click izquierdo y hace click derecho en el punto al que quiere atacar Se aplican las siguientes reglas:
+1. Normalmente, las balas realizan pathfinding de línea vista.
+2. Las balas rebotan en las paredes con cierto ángulo definido por el estudiante.
+3. La bala puede rebotarle al mismo tanque que la disparó y hacerle daño
+4. Una bala que toque al tanque enemigo (o al mismo que la disparó), produce el siguiente
+daño:
+a. 25% de daño a los tanques celeste/azul
+b. 50% de daño a los tanques amarillo/rojo
+Cada vez que un tanque dispara, se muestra en pantalla un trazo de la ruta calculada para la bala.
+Dicho trazo se borra en el siguiente turno.
+
+Para que el daño o la vida total total de cada tanque se muestre en todo momento, quiero que se muestren unos indicadores de vida presentes en la carpeta C:\Users\Oreo2.0\CLionProjects\Proyecto2_Datos2_TankAttack\LifeBar, se llaman Hundred.png, SeventyFive.png, Fivety.png y TwentyFive.png, cada uno de estos para representar la vida de cada jugador, el de jugador uno está en la izquierda de la pantalla y el del segundo jugador va a estar en la parte derecha
+Dependiendo del color del tanque, le quita un porcentaje de vida específico
+A continuación te presento todo el código relevante para que implementes sin errores lo que te pido
+#include "Tank.h"
+#include "GridGraph.h"
+#include "PathfindingBFS.h"
+#include "PathfindingLineaVista.h"
+#include <QtWidgets/QGraphicsScene>
+#include <QRandomGenerator>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsPixmapItem>
+#include <QDebug>
+#include <QLabel>
+#include <QThread>
+
+// Constructor para inicializar el tanque con vida, imagen y tipo
+Tank::Tank(int health, const QString &imagePath, int type)
+    : health(health), pixmap(imagePath), Tank_type(type) {
+    if (pixmap.isNull()) {
+        qDebug() << "Error: No se pudo cargar la imagen desde" << imagePath;
+    }
+    setPixmap(pixmap);
+}
+
+// Seleccionar el tipo de movimiento del tanque basado en su tipo y probabilidad
+int Tank::selectMovementForTank() const {
+    int probability = QRandomGenerator::global()->bounded(100); // Genera un número aleatorio entre 0 y 99
+
+    // Tanques celeste/azul
+    if (Tank_type == 1) {
+        return (probability < 50) ? 0 : 2; // 50% BFS, 50% Línea Vista
+    }
+    // Tanques amarillo/rojo
+    if (Tank_type == 0) {
+        return (probability < 80) ? 1 : 2; // 80% Dijkstra, 20% Línea Vista
+    }
+
+    return 2; // Default a Línea Vista si hay algún error
+}
+
+void Tank::display(QGraphicsScene &scene, int row, int col, int cellWidth, int cellHeight) {
+    QPixmap scaledPixmap = pixmap.scaled(cellWidth, cellHeight, Qt::KeepAspectRatio);
+    setPixmap(scaledPixmap);
+    int x = col * cellWidth;
+    int y = row * cellHeight;
+    setPos(x, y);
+    currentRow = row;
+    currentCol = col;
+    scene.addItem(this);
+}
+
+void Tank::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    emit tankSelected(this);
+    qDebug() << "Tanque seleccionado en posición (" << currentRow << "," << currentCol << ")";
+
+    // Mostrar las coordenadas del clic en la escena
+    QPointF clickPos = event->scenePos();
+    qDebug() << "Coordenadas del clic: (" << clickPos.x() << "," << clickPos.y() << ")";
+
+    // Llamar a la implementación base para asegurarse de que se manejen otros eventos
+    QGraphicsPixmapItem::mousePressEvent(event);
+}
+
+// Movimiento del tanque, basado en el algoritmo seleccionado
+void Tank::moveToPath(GridGraph &graph, int* path, int pathLength, QGraphicsScene &scene, int cellWidth, int cellHeight) {
+    // Si se encontró un camino
+    if (path != nullptr && pathLength > 0) {
+        for (int i = 0; i < pathLength; ++i) {
+            int nextNode = path[i];
+            int nextRow = nextNode / graph.getCols();
+            int nextCol = nextNode % graph.getCols();
+
+            // Verificar si el nodo siguiente está dentro de los límites
+            if (nextRow < 0 || nextRow >= graph.getRows() || nextCol < 0 || nextCol >= graph.getCols()) {
+                qDebug() << "El tanque alcanzó el límite del mapa.";
+                break;
+            }
+
+            if (graph.isObstacle(nextRow, nextCol)) {
+                qDebug() << "Encontrado obstáculo en el camino.";
+                break;
+            }
+
+            // Actualizar la posición del tanque en cada paso
+            this->display(scene, nextRow, nextCol, cellWidth, cellHeight);
+
+            // Actualizar la posición interna del tanque en cada paso
+            currentRow = nextRow;
+            currentCol = nextCol;
+
+            QThread::msleep(200);
+            QApplication::processEvents();
+        }
+
+        // Emitir la señal cuando el movimiento ha terminado
+        emit movementCompleted();
+    } else {
+        qDebug() << "No se encontró un camino para mover el tanque.";
+    }
+}
+
+
+
+#ifndef TANK_H
+#define TANK_H
+
+#include <QLabel>
+#include <QPixmap>
+#include <QTimer>
+#include <QObject>
+#include <QGraphicsPixmapItem>
+#include <QApplication>
+
+
+// Declaración adelantada de GridGraph
+class GridGraph;
+
+class Tank : public QObject, public QGraphicsPixmapItem {
+    Q_OBJECT
+public:
+    // Constructor para inicializar el tanque con vida y una imagen
+    Tank(int health, const QString &imagePath, int type);
+
+    // Métodos getter
+    int getHealth() const;
+    void setHealth(int health);
+    int getType() const;
+    bool shouldUseBFS() const;
+    int selectMovementForTank() const;
+
+    // Metodo para mostrar el tanque en la ventana
+    void display(QGraphicsScene &scene, int row, int col, int cellWidth, int cellHeight);
+
+    // Metodo para mover el tanque
+    void moveToPath(GridGraph &graph, int* path, int pathLength, QGraphicsScene &scene, int cellWidth, int cellHeight);
+
+    // Eventos de click
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+
+    // Almacenar las coordenadas actuales
+    int currentRow;
+    int currentCol;
+
+    signals:
+        void tankSelected(Tank* tank);  // Señal para notificar que un tanque ha sido seleccionado
+        void movementCompleted();
+
+    // Metodo para disparar
+    void shoot(QWidget *collisionTarget);
+
+private:
+    int health;          // Vida del tanque
+    int Tank_type;
+    QPixmap pixmap;      // Imagen que representa al tanque
+    QLabel *label;       // QLabel para mostrar la imagen del tanque
+
+};
+
+#endif // TANK_H
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsScene>
+#include <QtGui/QScreen>
+#include <QRandomGenerator>
+#include <QMessageBox>  // Incluir QMessageBox para mostrar mensajes
+#include "GridGraph.h"
+#include "Player.h"
+#include "CustomView.h"
+
+// Variable global para controlar el turno
+int currentPlayerTurn = 0;
+
+void switchTurn(Player& player1, Player& player2, QWidget* parent);
+
+// Función para manejar la selección del tanque
+void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QWidget* parent) {
+    if (currentPlayerTurn == currentPlayer.getId()) {  // Solo permitir la selección si es el turno del jugador correcto
+        if (currentPlayer.canTakeAction()) {
+            view.selectTank(tank);  // Seleccionar el tanque usando CustomView
+            // No mostrar ningún mensaje aquí para eliminar el mensaje de "Esperando el movimiento..."
+        } else {
+            QMessageBox::information(parent, "Acción no permitida", QString::fromStdString(currentPlayer.getName()) + " ya ha realizado una acción en este turno.");
+        }
+    } else {
+        QMessageBox::information(parent, "Turno incorrecto", "No es el turno de " + QString::fromStdString(currentPlayer.getName()) + ". No puedes seleccionar este tanque.");
+    }
+}
+
+// Función para cambiar de turno
+void switchTurn(Player& player1, Player& player2, QWidget* parent) {
+    // Resetear las acciones del jugador anterior
+    if (currentPlayerTurn == player1.getId()) {
+        player1.resetActions();  // Reiniciar acciones al cambiar de turno
+    } else {
+        player2.resetActions();
+    }
+
+    // Cambiar el turno
+    currentPlayerTurn = (currentPlayerTurn == player1.getId()) ? player2.getId() : player1.getId();
+    QString nextPlayerName = (currentPlayerTurn == player1.getId()) ? QString::fromStdString(player1.getName()) : QString::fromStdString(player2.getName());
+    QMessageBox::information(parent, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
+}
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+
+    // Configuración de la pantalla
+    int viewWidth = 1500;
+    int viewHeight = 1000;
+    int rows = 10;
+    int cols = 20;
+
+    // Crear la escena gráfica
+    QGraphicsScene scene;
+    scene.setSceneRect(0, 0, viewWidth, viewHeight);
+
+    // Crear el grafo que representa la cuadrícula
+    GridGraph graph(rows, cols);
+
+    // Generar obstáculos en el grafo
+    float obstacleDensity = 0.1;
+    graph.generateObstacles(obstacleDensity);
+
+    // Configuración de las celdas
+    float scaleFactor = 0.8;
+    int cellWidth = (viewWidth / cols) * scaleFactor;
+    int cellHeight = (viewHeight / rows) * scaleFactor;
+
+    // Dibujar el grid en la escena
+    graph.drawGrid(scene, viewWidth, viewHeight, scaleFactor);
+
+    // Crear jugadores y asignar tanques con sus propiedades
+    Player player1(1, "Player 1");
+    player1.setTank(0, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png", 1);
+    player1.setTank(1, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png", 1);
+    player1.setTank(2, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png", 0);
+    player1.setTank(3, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png", 0);
+
+    Player player2(2, "Player 2");
+    player2.setTank(0, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png", 1);
+    player2.setTank(1, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png", 1);
+    player2.setTank(2, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png", 0);
+    player2.setTank(3, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png", 0);
+
+    // Colocar los tanques en el grid
+    for (int i = 0; i < 4; ++i) {
+        graph.addTank(*player1.getTank(i), i * 3, 0, scene, cellWidth, cellHeight);         // Tanques jugador 1 a la izquierda
+        graph.addTank(*player2.getTank(i), i * 3, cols - 1, scene, cellWidth, cellHeight);  // Tanques jugador 2 a la derecha
+    }
+
+    // Generar PowerUps aleatorios
+    float powerUpDensity = 0.02;
+    graph.generatePowerUps(scene, powerUpDensity, cellWidth, cellHeight);
+
+    // Crear la vista personalizada
+    CustomView view(&scene, graph, cellWidth, cellHeight);
+    view.setWindowTitle("Tank Attack!");
+    view.resize(viewWidth, viewHeight);
+    view.show(); // Mostrar la vista
+
+    // Seleccionar aleatoriamente cuál jugador comienza la partida
+    currentPlayerTurn = QRandomGenerator::global()->bounded(1, 3); // Jugador 1 o 2
+    QMessageBox::information(&view, "Inicio del juego", "Comienza el jugador " + QString::number(currentPlayerTurn));
+
+    // Conectar la señal de selección del tanque para los tanques del jugador 1
+    for (int i = 0; i < 4; ++i) {
+        QObject::connect(player1.getTank(i), &Tank::tankSelected, [&view, &player1](Tank* tank) {
+            handleTankSelection(tank, view, player1, &view);
+        });
+        QObject::connect(player2.getTank(i), &Tank::tankSelected, [&view, &player2](Tank* tank) {
+            handleTankSelection(tank, view, player2, &view);
+        });
+    }
+
+    // Conectar la señal de movimiento completado para los tanques del jugador 1
+    for (int i = 0; i < 4; ++i) {
+        QObject::connect(player1.getTank(i), &Tank::movementCompleted, [&player1, &player2, &view]() {
+            switchTurn(player1, player2, &view);
+        });
+        QObject::connect(player2.getTank(i), &Tank::movementCompleted, [&player1, &player2, &view]() {
+            switchTurn(player1, player2, &view);
+        });
+    }
+
+    return app.exec();
+}
+
+aparte de implementar código en estos scripts, también quiero que generes nuevas clases con .cpp y .h para que todo esté encapsulado y entendible
+La dirección de la bala a disparar está en el mismo directorio anterior, se llama dot.png
+Cada tanque debe tener un 100 de vida al inicio de la partida, cuando un tanque llegue a 0, este desaparece de la pantalla
+
+
+
+
+
+
+
+
+
+
+
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsScene>
+#include <QtGui/QScreen>
+#include <QRandomGenerator>
+#include <QMessageBox>
+#include "GridGraph.h"
+#include "Player.h"
+#include "CustomView.h"
+#include "Bullet.h"
+
+// Variable global para controlar el turno
+int currentPlayerTurn = 0;
+
+void switchTurn(Player& player1, Player& player2, QWidget* parent);
+void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QWidget* parent);
+void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos);
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+
+    // Configuración de la pantalla
+    int viewWidth = 1500;
+    int viewHeight = 1000;
+    int rows = 10;
+    int cols = 20;
+
+    // Crear la escena gráfica
+    QGraphicsScene scene;
+    scene.setSceneRect(0, 0, viewWidth, viewHeight);
+
+    // Crear el grafo que representa la cuadrícula
+    GridGraph graph(rows, cols);
+
+    // Generar obstáculos en el grafo
+    float obstacleDensity = 0.1;
+    graph.generateObstacles(obstacleDensity);
+
+    // Configuración de las celdas
+    float scaleFactor = 0.8;
+    int cellWidth = (viewWidth / cols) * scaleFactor;
+    int cellHeight = (viewHeight / rows) * scaleFactor;
+
+    // Dibujar el grid en la escena
+    graph.drawGrid(scene, viewWidth, viewHeight, scaleFactor);
+
+    // Crear jugadores y asignar tanques con sus propiedades
+    Player player1(1, "Player 1");
+    player1.setTank(0, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png", 1);
+    player1.setTank(1, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png", 1);
+    player1.setTank(2, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png", 0);
+    player1.setTank(3, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png", 0);
+
+    Player player2(2, "Player 2");
+    player2.setTank(0, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png", 1);
+    player2.setTank(1, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png", 1);
+    player2.setTank(2, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png", 0);
+    player2.setTank(3, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png", 0);
+
+    // Colocar los tanques en el grid
+    for (int i = 0; i < 4; ++i) {
+        graph.addTank(*player1.getTank(i), i * 3, 0, scene, cellWidth, cellHeight);         // Tanques jugador 1 a la izquierda
+        graph.addTank(*player2.getTank(i), i * 3, cols - 1, scene, cellWidth, cellHeight);  // Tanques jugador 2 a la derecha
+    }
+
+    // Crear la vista personalizada
+    CustomView view(&scene, graph, cellWidth, cellHeight);
+    view.setWindowTitle("Tank Attack!");
+    view.resize(viewWidth, viewHeight);
+    view.show(); // Mostrar la vista
+
+    // Seleccionar aleatoriamente cuál jugador comienza la partida
+    currentPlayerTurn = QRandomGenerator::global()->bounded(1, 3); // Jugador 1 o 2
+    QMessageBox::information(&view, "Inicio del juego", "Comienza el jugador " + QString::number(currentPlayerTurn));
+
+    // Conectar la señal de selección del tanque para los tanques del jugador 1 y 2
+    for (int i = 0; i < 4; ++i) {
+        QObject::connect(player1.getTank(i), &Tank::tankSelected, [&view, &player1](Tank* tank) {
+            handleTankSelection(tank, view, player1, &view);
+        });
+        QObject::connect(player2.getTank(i), &Tank::tankSelected, [&view, &player2](Tank* tank) {
+            handleTankSelection(tank, view, player2, &view);
+        });
+
+        // Conectar click derecho para disparar (cambiar captura de '=' a '&')
+        // Conectar click derecho para disparar (incluyendo cellWidth y cellHeight en la captura por referencia)
+        QObject::connect(&view, &CustomView::rightClick, [&scene, &graph, &view, &cellWidth, &cellHeight](QPointF pos) {
+            handleTankShoot(view.getSelectedTank(), scene, graph, cellWidth, cellHeight, pos);
+        });
+
+
+    }
+
+    // Conectar la señal de movimiento completado para los tanques del jugador 1 y 2
+    for (int i = 0; i < 4; ++i) {
+        QObject::connect(player1.getTank(i), &Tank::movementCompleted, [&player1, &player2, &view]() {
+            switchTurn(player1, player2, &view);
+        });
+        QObject::connect(player2.getTank(i), &Tank::movementCompleted, [&player1, &player2, &view]() {
+            switchTurn(player1, player2, &view);
+        });
+    }
+
+    return app.exec();
+}
+
+// Función para manejar la selección del tanque
+void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QWidget* parent) {
+    if (currentPlayerTurn == currentPlayer.getId()) {  // Solo permitir la selección si es el turno del jugador correcto
+        if (currentPlayer.canTakeAction()) {
+            view.selectTank(tank);  // Seleccionar el tanque usando CustomView
+        } else {
+            QMessageBox::information(parent, "Acción no permitida", QString::fromStdString(currentPlayer.getName()) + " ya ha realizado una acción en este turno.");
+        }
+    } else {
+        QMessageBox::information(parent, "Turno incorrecto", "No es el turno de " + QString::fromStdString(currentPlayer.getName()) + ". No puedes seleccionar este tanque.");
+    }
+}
+
+// Función para manejar el disparo del tanque
+void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos) {
+    if (!tank) return;
+
+    // Convertir las coordenadas del clic en filas y columnas
+    int targetRow = static_cast<int>(targetPos.y()) / cellHeight;
+    int targetCol = static_cast<int>(targetPos.x()) / cellWidth;
+
+    // Iniciar el disparo desde el tanque
+    tank->shoot(&scene, &graph, targetRow, targetCol, cellWidth, cellHeight);
+}
+
+// Función para cambiar de turno
+void switchTurn(Player& player1, Player& player2, QWidget* parent) {
+    // Resetear las acciones del jugador anterior
+    if (currentPlayerTurn == player1.getId()) {
+        player1.resetActions();  // Reiniciar acciones al cambiar de turno
+    } else {
+        player2.resetActions();
+    }
+
+    // Cambiar el turno
+    currentPlayerTurn = (currentPlayerTurn == player1.getId()) ? player2.getId() : player1.getId();
+    QString nextPlayerName = (currentPlayerTurn == player1.getId()) ? QString::fromStdString(player1.getName()) : QString::fromStdString(player2.getName());
+    QMessageBox::information(parent, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
+}

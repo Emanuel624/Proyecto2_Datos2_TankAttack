@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+aa116d235632b8859b1abc1d8e3945bb CMakeFiles/Proyecto2_TankAttack_autogen
+8ad696b0ba8f226fe0ac1580457a56c6 Proyecto2_TankAttack_autogen/timestamp

@@ -13,7 +13,7 @@ int currentPlayerTurn = 0;
 
 void switchTurn(Player& player1, Player& player2, QWidget* parent);
 void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QWidget* parent);
-void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos);
+void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos, Player& player1, Player& player2, QWidget* parent);
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -69,12 +69,16 @@ int main(int argc, char *argv[]) {
     view.show(); // Mostrar la vista
 
     // Conectar el clic derecho para manejar el disparo
-    QObject::connect(&view, &CustomView::rightClick, [&view, &scene, &graph, cellWidth, cellHeight](QPointF pos) {
+    // Conectar el click derecho para disparar
+    QObject::connect(&view, &CustomView::rightClick, [&view, &scene, &graph, cellWidth, cellHeight, &player1, &player2](QPointF pos) {
         Tank* selectedTank = view.getSelectedTank();
         if (selectedTank) {
-            handleTankShoot(selectedTank, scene, graph, cellWidth, cellHeight, pos);
+            handleTankShoot(selectedTank, scene, graph, cellWidth, cellHeight, pos, player1, player2, &view);
         }
     });
+
+
+
 
     // Seleccionar aleatoriamente cuál jugador comienza la partida
     currentPlayerTurn = QRandomGenerator::global()->bounded(1, 3); // Jugador 1 o 2
@@ -118,24 +122,45 @@ void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QW
 }
 
 // Función para manejar el disparo del tanque
-void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos) {
-    if (!tank) return;
-
-    // Convertir las coordenadas del clic en filas y columnas
+void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos, Player& player1, Player& player2, QWidget* parent) {
+    // Crear la bala y dispararla
     int targetRow = static_cast<int>(targetPos.y()) / cellHeight;
     int targetCol = static_cast<int>(targetPos.x()) / cellWidth;
 
-    // Iniciar el disparo desde el tanque
-    tank->shoot(&scene, &graph, targetRow, targetCol, cellWidth, cellHeight);
+    Bullet* bullet = new Bullet(&graph, tank->getCurrentRow(), tank->getCurrentCol(), targetRow, targetCol);
+    bullet->startMovement(&scene, cellWidth, cellHeight);
 
+    // Conectar el evento de la bala cuando termina su movimiento
+    QObject::connect(bullet, &Bullet::movementCompleted, [&player1, &player2, parent]() {
+        switchTurn(player1, player2, parent);  // Pasar el turno al siguiente jugador
+    });
+
+    tank->setEnabled(false);  // Bloquear el tanque después del disparo
 }
+
+
+
+
 
 // Función para cambiar de turno
 void switchTurn(Player& player1, Player& player2, QWidget* parent) {
+    // Deshabilitar los tanques del jugador anterior
     if (currentPlayerTurn == player1.getId()) {
-        player1.resetActions();  // Reiniciar acciones al cambiar de turno
+        for (int i = 0; i < 4; ++i) {
+            player1.getTank(i)->setEnabled(false);  // Bloquear acciones del jugador 1
+        }
+        player2.resetActions();  // Reiniciar acciones del jugador 2
+        for (int i = 0; i < 4; ++i) {
+            player2.getTank(i)->setEnabled(true);   // Habilitar acciones del jugador 2
+        }
     } else {
-        player2.resetActions();  // Reiniciar acciones del otro jugador
+        for (int i = 0; i < 4; ++i) {
+            player2.getTank(i)->setEnabled(false);  // Bloquear acciones del jugador 2
+        }
+        player1.resetActions();  // Reiniciar acciones del jugador 1
+        for (int i = 0; i < 4; ++i) {
+            player1.getTank(i)->setEnabled(true);   // Habilitar acciones del jugador 1
+        }
     }
 
     // Cambiar el turno
@@ -144,6 +169,7 @@ void switchTurn(Player& player1, Player& player2, QWidget* parent) {
     QString nextPlayerName = (currentPlayerTurn == player1.getId()) ? QString::fromStdString(player1.getName()) : QString::fromStdString(player2.getName());
     QMessageBox::information(parent, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
 }
+
 
 
 

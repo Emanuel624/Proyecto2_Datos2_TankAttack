@@ -1,0 +1,42 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/Proyecto2_TankAttack_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/Proyecto2_TankAttack_autogen.dir/ParseCache.txt"
+  "Proyecto2_TankAttack_autogen"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Bullet.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Bullet.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/CustomView.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/CustomView.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/GridGraph.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/GridGraph.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PathfindingBFS.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PathfindingBFS.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PathfindingDijkstra.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PathfindingDijkstra.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PathfindingLineaVista.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PathfindingLineaVista.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Player.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Player.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PowerUp.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PowerUp.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PowerUpQueue.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PowerUpQueue.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PriorityQueue.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/PriorityQueue.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen/mocs_compilation.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen/mocs_compilation.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Queue.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Queue.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Tank.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/Tank.cpp.obj.d"
+  "CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.obj"
+  "CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.obj.d"
+  "Proyecto2_TankAttack.exe"
+  "Proyecto2_TankAttack.exe.manifest"
+  "Proyecto2_TankAttack.pdb"
+  "libProyecto2_TankAttack.dll.a"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/Proyecto2_TankAttack.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

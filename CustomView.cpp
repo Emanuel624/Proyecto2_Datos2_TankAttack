@@ -24,11 +24,25 @@ Tank* CustomView::getSelectedTank() const {
 
 // Reimplementación del método mousePressEvent
 void CustomView::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::RightButton) {
-        // Emitir la señal de click derecho con la posición del ratón en la escena
-        emit rightClick(mapToScene(event->pos()));
-    } else if (selectedTank) {
+    if (event->button() == Qt::RightButton && selectedTank) {
         // Obtener la posición del clic en la escena
+        QPointF scenePos = mapToScene(event->pos());
+        int targetCol = static_cast<int>(scenePos.x()) / cellWidth;
+        int targetRow = static_cast<int>(scenePos.y()) / cellHeight;
+
+        // Disparar la bala desde el tanque seleccionado
+        selectedTank->shoot(scene(), &graph, targetRow, targetCol, cellWidth, cellHeight);
+
+        // Conectar la señal de movimiento completado de la bala para cambiar de turno
+        connect(selectedTank, &Tank::movementCompleted, [this]() {
+            emit turnEnded();  // Emite una señal indicando que el turno ha terminado
+            clearRouteLines();  // Borra la ruta de la bala al final del turno
+        });
+
+        // Deseleccionar el tanque
+        selectedTank = nullptr;
+    } else if (selectedTank && selectedTank->isEnabled()) {
+        // Mover el tanque si se selecciona una celda con el clic izquierdo
         QPointF scenePos = mapToScene(event->pos());
         int targetCol = static_cast<int>(scenePos.x()) / cellWidth;
         int targetRow = static_cast<int>(scenePos.y()) / cellHeight;
@@ -44,25 +58,19 @@ void CustomView::mousePressEvent(QMouseEvent* event) {
 
         if (movementType == 0) {
             // Usar BFS
-            qDebug() << "Usando BFS para mover el tanque.";
             path = graph.bfs(startNode, targetNode, pathLength);
         } else if (movementType == 1) {
             // Usar Dijkstra
-            qDebug() << "Usando Dijkstra para mover el tanque.";
             path = graph.dijkstra(startNode, targetNode, pathLength);
         } else {
             // Usar Línea Vista
-            qDebug() << "Usando Línea Vista para mover el tanque.";
             path = PathfindingLineaVista::lineaVista(graph, selectedTank->getCurrentRow(), selectedTank->getCurrentCol(), targetRow, targetCol, pathLength, selectedTank, *scene(), cellWidth, cellHeight);
         }
 
-        // Mover el tanque y dibujar la ruta con el mismo camino
         if (path != nullptr && pathLength > 0) {
-            drawRoute(path, pathLength); // Dibuja la ruta utilizando el mismo path calculado
-            selectedTank->moveToPath(graph, path, pathLength, *scene(), cellWidth, cellHeight); // Mover el tanque siguiendo exactamente ese path
-            delete[] path;  // Liberar el arreglo de camino
-        } else {
-            qDebug() << "No se pudo encontrar una ruta válida.";
+            drawRoute(path, pathLength);  // Dibuja la ruta en pantalla
+            selectedTank->moveToPath(graph, path, pathLength, *scene(), cellWidth, cellHeight);  // Mover el tanque
+            delete[] path;
         }
 
         selectedTank = nullptr;  // Deseleccionar el tanque
@@ -70,6 +78,7 @@ void CustomView::mousePressEvent(QMouseEvent* event) {
         QGraphicsView::mousePressEvent(event);
     }
 }
+
 
 // Método para borrar las líneas de la ruta anterior
 void CustomView::clearRouteLines() {

@@ -1,0 +1,5 @@
+C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug-mingw/CMakeFiles/Proyecto2_TankAttack.dir
+C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug-mingw/CMakeFiles/edit_cache.dir
+C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug-mingw/CMakeFiles/rebuild_cache.dir
+C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug-mingw/CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps.dir
+C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug-mingw/CMakeFiles/Proyecto2_TankAttack_autogen.dir

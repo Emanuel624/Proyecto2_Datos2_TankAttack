@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Proyecto2_TankAttack",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Proyecto2_TankAttack::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Proyecto2_TankAttack-Debug-68ac021e20d017f15fbc.json",
+					"name" : "Proyecto2_TankAttack",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Proyecto2_TankAttack_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Proyecto2_TankAttack_autogen-Debug-320f5c5446d32519d9ae.json",
+					"name" : "Proyecto2_TankAttack_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Proyecto2_TankAttack_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Proyecto2_TankAttack_autogen_timestamp_deps-Debug-4820db8da88c564bf814.json",
+					"name" : "Proyecto2_TankAttack_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug-mingw",
+		"source" : "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

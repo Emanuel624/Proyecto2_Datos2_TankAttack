@@ -26,6 +26,9 @@ add_executable(Proyecto2_TankAttack main.cpp
         Bullet.cpp
         main.cpp
         main.cpp
+        GridGraph.h
+        Bullet.h
+        Tank.cpp
 
 )
 

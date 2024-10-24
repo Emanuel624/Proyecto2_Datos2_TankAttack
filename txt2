@@ -1,0 +1,664 @@
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsScene>
+#include <QtGui/QScreen>
+#include <QRandomGenerator>
+#include <QMessageBox>
+#include "GridGraph.h"
+#include "Player.h"
+#include "CustomView.h"
+#include "Bullet.h"
+
+// Variable global para controlar el turno
+int currentPlayerTurn = 0;
+
+void switchTurn(Player& player1, Player& player2, QWidget* parent);
+void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QWidget* parent);
+void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos);
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+
+    // Configuración de la pantalla
+    int viewWidth = 1500;
+    int viewHeight = 1000;
+    int rows = 10;
+    int cols = 20;
+
+    // Crear la escena gráfica
+    QGraphicsScene scene;
+    scene.setSceneRect(0, 0, viewWidth, viewHeight);
+
+    // Crear el grafo que representa la cuadrícula
+    GridGraph graph(rows, cols);
+
+    // Generar obstáculos en el grafo
+    float obstacleDensity = 0.1;
+    graph.generateObstacles(obstacleDensity);
+
+    // Configuración de las celdas
+    float scaleFactor = 0.8;
+    int cellWidth = (viewWidth / cols) * scaleFactor;
+    int cellHeight = (viewHeight / rows) * scaleFactor;
+
+    // Dibujar el grid en la escena
+    graph.drawGrid(scene, viewWidth, viewHeight, scaleFactor);
+
+    // Crear jugadores y asignar tanques con sus propiedades
+    Player player1(1, "Player 1");
+    player1.setTank(0, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png", 1);
+    player1.setTank(1, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/RedTank.png", 1);
+    player1.setTank(2, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png", 0);
+    player1.setTank(3, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/BlueTank.png", 0);
+
+    Player player2(2, "Player 2");
+    player2.setTank(0, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png", 1);
+    player2.setTank(1, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/YellowTank.png", 1);
+    player2.setTank(2, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png", 0);
+    player2.setTank(3, 100, "C:/Users/Oreo2.0/CLionProjects/Proyecto2_Datos2_TankAttack/Tanks/LightBlueTank.png", 0);
+
+    // Colocar los tanques en el grid
+    for (int i = 0; i < 4; ++i) {
+        graph.addTank(*player1.getTank(i), i * 3, 0, scene, cellWidth, cellHeight);         // Tanques jugador 1 a la izquierda
+        graph.addTank(*player2.getTank(i), i * 3, cols - 1, scene, cellWidth, cellHeight);  // Tanques jugador 2 a la derecha
+    }
+
+    // Crear la vista personalizada
+    CustomView view(&scene, graph, cellWidth, cellHeight);
+    view.setWindowTitle("Tank Attack!");
+    view.resize(viewWidth, viewHeight);
+    view.show(); // Mostrar la vista
+
+    // Seleccionar aleatoriamente cuál jugador comienza la partida
+    currentPlayerTurn = QRandomGenerator::global()->bounded(1, 3); // Jugador 1 o 2
+    QMessageBox::information(&view, "Inicio del juego", "Comienza el jugador " + QString::number(currentPlayerTurn));
+
+    // Conectar la señal de selección del tanque para los tanques del jugador 1 y 2
+    for (int i = 0; i < 4; ++i) {
+        QObject::connect(player1.getTank(i), &Tank::tankSelected, [&view, &player1](Tank* tank) {
+            handleTankSelection(tank, view, player1, &view);
+        });
+
+        QObject::connect(player2.getTank(i), &Tank::tankSelected, [&view, &player2](Tank* tank) {
+            handleTankSelection(tank, view, player2, &view);
+        });
+    }
+
+    // Conectar la señal de movimiento completado para los tanques del jugador 1 y 2
+    for (int i = 0; i < 4; ++i) {
+        QObject::connect(player1.getTank(i), &Tank::movementCompleted, [&player1, &player2, &view]() {
+            switchTurn(player1, player2, &view);  // Pasar el turno al siguiente jugador cuando el tanque termina de moverse o disparar
+        });
+        QObject::connect(player2.getTank(i), &Tank::movementCompleted, [&player1, &player2, &view]() {
+            switchTurn(player1, player2, &view);
+        });
+    }
+
+    return app.exec();
+}
+
+// Función para manejar la selección del tanque
+void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QWidget* parent) {
+    if (currentPlayerTurn == currentPlayer.getId()) {  // Solo permitir la selección si es el turno del jugador correcto
+        if (currentPlayer.canTakeAction()) {
+            view.selectTank(tank);  // Seleccionar el tanque usando CustomView
+        } else {
+            QMessageBox::information(parent, "Acción no permitida", QString::fromStdString(currentPlayer.getName()) + " ya ha realizado una acción en este turno.");
+        }
+    } else {
+        QMessageBox::information(parent, "Turno incorrecto", "No es el turno de " + QString::fromStdString(currentPlayer.getName()) + ". No puedes seleccionar este tanque.");
+    }
+}
+
+// Función para manejar el disparo del tanque
+void handleTankShoot(Tank* tank, QGraphicsScene& scene, GridGraph& graph, int cellWidth, int cellHeight, QPointF targetPos) {
+    if (!tank) return;
+
+    // Convertir las coordenadas del clic en filas y columnas
+    int targetRow = static_cast<int>(targetPos.y()) / cellHeight;
+    int targetCol = static_cast<int>(targetPos.x()) / cellWidth;
+
+    // Iniciar el disparo desde el tanque
+    tank->shoot(&scene, &graph, targetRow, targetCol, cellWidth, cellHeight);
+
+}
+
+// Función para cambiar de turno
+void switchTurn(Player& player1, Player& player2, QWidget* parent) {
+    if (currentPlayerTurn == player1.getId()) {
+        player1.resetActions();  // Reiniciar acciones al cambiar de turno
+    } else {
+        player2.resetActions();  // Reiniciar acciones del otro jugador
+    }
+
+    // Cambiar el turno
+    currentPlayerTurn = (currentPlayerTurn == player1.getId()) ? player2.getId() : player1.getId();
+
+    QString nextPlayerName = (currentPlayerTurn == player1.getId()) ? QString::fromStdString(player1.getName()) : QString::fromStdString(player2.getName());
+    QMessageBox::information(parent, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Tank.h"
+#include "GridGraph.h"
+#include "PathfindingBFS.h"
+#include "PathfindingLineaVista.h"
+#include <QtWidgets/QGraphicsScene>
+#include <QRandomGenerator>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsPixmapItem>
+#include <QDebug>
+#include <QLabel>
+#include <QThread>
+
+
+// Constructor para inicializar el tanque con vida, imagen y tipo
+Tank::Tank(int health, const QString &imagePath, int type)
+    : health(health), pixmap(imagePath), Tank_type(type) {
+    if (pixmap.isNull()) {
+        qDebug() << "Error: No se pudo cargar la imagen desde" << imagePath;
+    }
+    setPixmap(pixmap);
+}
+
+// Método para disparar desde el tanque
+void Tank::shoot(QGraphicsScene* scene, GridGraph* graph, int targetRow, int targetCol, int cellWidth, int cellHeight) {
+    // Crear la bala como un punto (círculo negro)
+    Bullet* bullet = new Bullet(graph, currentRow, currentCol, targetRow, targetCol);
+
+    // Iniciar el movimiento de la bala
+    bullet->startMovement(scene, cellWidth, cellHeight);
+
+    // Conectar la señal cuando el movimiento de la bala ha terminado para pasar al siguiente turno
+    connect(bullet, &Bullet::movementCompleted, [this]() {
+        emit movementCompleted();  // Pasar el turno una vez que la bala complete su movimiento
+    });
+}
+
+
+
+
+
+
+// Seleccionar el tipo de movimiento del tanque basado en su tipo y probabilidad
+int Tank::selectMovementForTank() const {
+    int probability = QRandomGenerator::global()->bounded(100); // Genera un número aleatorio entre 0 y 99
+
+    // Tanques celeste/azul
+    if (Tank_type == 1) {
+        return (probability < 50) ? 0 : 2; // 50% BFS, 50% Línea Vista
+    }
+    // Tanques amarillo/rojo
+    if (Tank_type == 0) {
+        return (probability < 80) ? 1 : 2; // 80% Dijkstra, 20% Línea Vista
+    }
+
+    return 2; // Default a Línea Vista si hay algún error
+}
+
+void Tank::display(QGraphicsScene &scene, int row, int col, int cellWidth, int cellHeight) {
+    QPixmap scaledPixmap = pixmap.scaled(cellWidth, cellHeight, Qt::KeepAspectRatio);
+    setPixmap(scaledPixmap);
+    int x = col * cellWidth;
+    int y = row * cellHeight;
+    setPos(x, y);
+    currentRow = row;
+    currentCol = col;
+    scene.addItem(this);
+}
+
+void Tank::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    emit tankSelected(this);
+    qDebug() << "Tanque seleccionado en posición (" << currentRow << "," << currentCol << ")";
+
+    // Mostrar las coordenadas del clic en la escena
+    QPointF clickPos = event->scenePos();
+    qDebug() << "Coordenadas del clic: (" << clickPos.x() << "," << clickPos.y() << ")";
+
+    // Llamar a la implementación base para asegurarse de que se manejen otros eventos
+}
+
+// Movimiento del tanque, basado en el algoritmo seleccionado
+void Tank::moveToPath(GridGraph &graph, int* path, int pathLength, QGraphicsScene &scene, int cellWidth, int cellHeight) {
+    // Si se encontró un camino
+    if (path != nullptr && pathLength > 0) {
+        for (int i = 0; i < pathLength; ++i) {
+            int nextNode = path[i];
+            int nextRow = nextNode / graph.getCols();
+            int nextCol = nextNode % graph.getCols();
+
+            // Verificar si el nodo siguiente está dentro de los límites
+            if (nextRow < 0 || nextRow >= graph.getRows() || nextCol < 0 || nextCol >= graph.getCols()) {
+                qDebug() << "El tanque alcanzó el límite del mapa.";
+                break;
+            }
+
+            if (graph.isObstacle(nextRow, nextCol)) {
+                qDebug() << "Encontrado obstáculo en el camino.";
+                break;
+            }
+
+            // Actualizar la posición del tanque en cada paso
+            this->display(scene, nextRow, nextCol, cellWidth, cellHeight);
+
+            // Actualizar la posición interna del tanque en cada paso
+            currentRow = nextRow;
+            currentCol = nextCol;
+
+            QThread::msleep(200);
+            QApplication::processEvents();
+        }
+
+        // Emitir la señal cuando el movimiento ha terminado
+        emit movementCompleted();
+    } else {
+        qDebug() << "No se encontró un camino para mover el tanque.";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "Bullet.h"
+#include "GridGraph.h"
+#include <QBrush>
+#include <QDebug>
+
+Bullet::Bullet(GridGraph* graph, int startRow, int startCol, int targetRow, int targetCol)
+    : graph(graph), currentRow(startRow), currentCol(startCol), targetRow(targetRow), targetCol(targetCol), reboteCount(0) {
+
+    // Crear un círculo (punto) como la representación de la bala
+    int size = 10;  // Tamaño del punto
+    setRect(0, 0, size, size);
+    setBrush(QBrush(Qt::black));  // Usar color negro para la bala
+
+    // Calcular dirección inicial
+    directionX = (targetCol > currentCol) ? 1 : -1;
+    directionY = (targetRow > currentRow) ? 1 : -1;
+
+    // Crear un timer para la animación con intervalo optimizado
+    movementTimer = new QTimer(this);
+    connect(movementTimer, &QTimer::timeout, this, &Bullet::moveStep);
+}
+
+void Bullet::startMovement(QGraphicsScene* scene, int cellWidth, int cellHeight) {
+    scene->addItem(this);
+    setPos(currentCol * cellWidth, currentRow * cellHeight);
+    movementTimer->start(50);  // Reducir el intervalo para mejorar fluidez (50 ms)
+}
+
+void Bullet::moveStep() {
+    // Mover un paso hacia el objetivo
+    calculateNextStep();
+
+    // Verificar si la bala toca un obstáculo o borde
+    if (currentRow < 0 || currentRow >= graph->getRows() || currentCol < 0 || currentCol >= graph->getCols()) {
+        if (reboteCount < 1) {
+            handleRebound();  // Cambiar dirección al tocar el borde
+            reboteCount++;  // Incrementar el contador de rebotes
+        } else {
+            // Si ya rebotó una vez, detener la bala y eliminarla
+            movementTimer->stop();
+            emit movementCompleted();
+            deleteLater();  // Liberar la bala de la memoria
+        }
+    } else {
+        // Mover la bala en la escena
+        setPos(currentCol * 50, currentRow * 50); // Escalar según el tamaño de las celdas
+    }
+
+    // Verificar si alcanzó el objetivo
+    if (currentRow == targetRow && currentCol == targetCol) {
+        movementTimer->stop();
+        emit movementCompleted();
+        deleteLater();  // Liberar la bala de la memoria
+    }
+}
+
+void Bullet::calculateNextStep() {
+    // Mover la bala en línea recta
+    currentCol += directionX;
+    currentRow += directionY;
+}
+
+void Bullet::handleRebound() {
+    // Cambiar la dirección de la bala al tocar el borde (rebote en un ángulo de 45 grados)
+    if (currentRow < 0 || currentRow >= graph->getRows()) {
+        // Rebote en el borde superior o inferior
+        directionY = -directionY;
+    }
+    if (currentCol < 0 || currentCol >= graph->getCols()) {
+        // Rebote en el borde izquierdo o derecho
+        directionX = -directionX;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "CustomView.h"
+#include <QGraphicsSceneMouseEvent>
+#include <QDebug>
+#include <QRandomGenerator>
+
+
+// Constructor
+CustomView::CustomView(QGraphicsScene* scene, GridGraph& graph, int cellWidth, int cellHeight, QWidget* parent)
+    : QGraphicsView(scene, parent), graph(graph), cellWidth(cellWidth), cellHeight(cellHeight), selectedTank(nullptr), routeLines(nullptr), routeSize(0) {
+    setRenderHint(QPainter::Antialiasing);
+}
+
+// Método para seleccionar un tanque
+void CustomView::selectTank(Tank* tank) {
+    clearRouteLines();  // Borrar la ruta anterior si existe
+    selectedTank = tank;
+}
+
+// Método para obtener el tanque seleccionado
+Tank* CustomView::getSelectedTank() const {
+    return selectedTank;
+}
+
+// Reimplementación del método mousePressEvent
+void CustomView::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::RightButton) {
+        // Emitir la señal de click derecho con la posición del ratón en la escena
+        emit rightClick(mapToScene(event->pos()));
+    } else if (selectedTank) {
+        // Obtener la posición del clic en la escena
+        QPointF scenePos = mapToScene(event->pos());
+        int targetCol = static_cast<int>(scenePos.x()) / cellWidth;
+        int targetRow = static_cast<int>(scenePos.y()) / cellHeight;
+
+        // Escoger el tipo de algoritmo de movimiento basado en probabilidad
+        int movementType = selectedTank->selectMovementForTank(); // Decidir entre BFS, Dijkstra o Línea Vista
+
+        int pathLength;
+        int startNode = selectedTank->getCurrentRow() * graph.getCols() + selectedTank->getCurrentCol();
+        int targetNode = targetRow * graph.getCols() + targetCol;
+
+        int* path = nullptr;
+
+        if (movementType == 0) {
+            // Usar BFS
+            qDebug() << "Usando BFS para mover el tanque.";
+            path = graph.bfs(startNode, targetNode, pathLength);
+        } else if (movementType == 1) {
+            // Usar Dijkstra
+            qDebug() << "Usando Dijkstra para mover el tanque.";
+            path = graph.dijkstra(startNode, targetNode, pathLength);
+        } else {
+            // Usar Línea Vista
+            qDebug() << "Usando Línea Vista para mover el tanque.";
+            path = PathfindingLineaVista::lineaVista(graph, selectedTank->getCurrentRow(), selectedTank->getCurrentCol(), targetRow, targetCol, pathLength, selectedTank, *scene(), cellWidth, cellHeight);
+        }
+
+        // Mover el tanque y dibujar la ruta con el mismo camino
+        if (path != nullptr && pathLength > 0) {
+            drawRoute(path, pathLength); // Dibuja la ruta utilizando el mismo path calculado
+            selectedTank->moveToPath(graph, path, pathLength, *scene(), cellWidth, cellHeight); // Mover el tanque siguiendo exactamente ese path
+            delete[] path;  // Liberar el arreglo de camino
+        } else {
+            qDebug() << "No se pudo encontrar una ruta válida.";
+        }
+
+        selectedTank = nullptr;  // Deseleccionar el tanque
+    } else {
+        QGraphicsView::mousePressEvent(event);
+    }
+}
+
+// Método para borrar las líneas de la ruta anterior
+void CustomView::clearRouteLines() {
+    if (routeLines) {
+        for (int i = 0; i < routeSize; ++i) {
+            if (routeLines[i]) {
+                scene()->removeItem(routeLines[i]);
+                delete routeLines[i];
+            }
+        }
+        delete[] routeLines;
+        routeLines = nullptr;
+        routeSize = 0;
+    }
+}
+
+// Método para dibujar la ruta en la escena
+void CustomView::drawRoute(int* path, int pathLength) {
+    if (pathLength < 2) return;
+
+    clearRouteLines();  // Asegúrate de limpiar la ruta anterior
+    routeSize = pathLength - 1;
+    routeLines = new QGraphicsLineItem*[routeSize];
+
+    QPen pen(Qt::red, 2);
+    for (int i = 0; i < routeSize; ++i) {
+        int startNode = path[i];
+        int endNode = path[i + 1];
+
+        int startRow = startNode / graph.getCols();
+        int startCol = startNode % graph.getCols();
+        int endRow = endNode / graph.getCols();
+        int endCol = endNode % graph.getCols();
+
+        // Calcular las coordenadas de inicio y fin de la línea
+        int startX = startCol * cellWidth + cellWidth / 2;
+        int startY = startRow * cellHeight + cellHeight / 2;
+        int endX = endCol * cellWidth + cellWidth / 2;
+        int endY = endRow * cellHeight + cellHeight / 2;
+
+        // Crear la línea que representa el tramo de la ruta
+        routeLines[i] = scene()->addLine(startX, startY, endX, endY, pen);
+    }
+}

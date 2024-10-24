@@ -1,5 +1,0 @@
-/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/CMakeFiles/Proyecto2_TankAttack.dir
-/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps.dir
-/home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/CMakeFiles/Proyecto2_TankAttack_autogen.dir

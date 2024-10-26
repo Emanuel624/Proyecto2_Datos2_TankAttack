@@ -1,10 +1,11 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <QObject>  // Incluir QObject
 #include <string>
-#include "PowerUpQueue.h"
-#include "PowerUp.h"  // Asegurarse de incluir PowerUp
 #include "Tank.h"
+#include "PowerUpQueue.h"
+#include <QGraphicsScene>
 
 class Player {
 public:
@@ -15,6 +16,7 @@ public:
     Tank* getTank(int index) const;
     int getId();
     std::string getName();  // Metodo getName
+    int getHealth() const;
 
     void addPowerUp(PowerUp* powerUp);
     PowerUp* usePowerUp();
@@ -34,6 +36,16 @@ public:
     void markPowerUp();
     void resetActions(); // Reinicia las acciones al inicio del turno
 
+    //Parametros para powerUp de dobles turnos
+    void setDoubleTurn(bool value);
+    bool getDoubleTurn() const;
+
+    int countActiveTanks() const;
+
+    void activateFullDamagePowerUp();
+    void deactivateFullDamagePowerUp();
+    bool isFullDamagePowerUpActive() const;
+
 private:
     int id;
     std::string name;
@@ -44,6 +56,10 @@ private:
     bool moved;      // Indica si ya movió el tanque
     bool shot;       // Indica si ya disparó
     bool usedPowerUp; // Indica si ya usó un PowerUp
+    bool hasDoubleTurn = false; // Indica si tiene el PowerUP de doble turno activo
+    int health;
+
+    bool fullDamagePowerUpActive = false;
 };
 
 #endif // PLAYER_H

@@ -37,6 +37,10 @@ int Player::getId() {
     return id;
 }
 
+int Tank::getHealth() const {
+    return health;  // Devuelve la salud del tanque
+}
+
 std::string Player::getName() {
     return name;
 }
@@ -106,6 +110,24 @@ void Player::markPowerUp() {
     usedPowerUp = true;
 }
 
+void Player::setDoubleTurn(bool value) {
+    hasDoubleTurn = value;
+}
+
+bool Player::getDoubleTurn() const {
+    return hasDoubleTurn;
+}
+
+int Player::countActiveTanks() const {
+    int activeTanks = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (tanks[i] != nullptr && tanks[i]->getHealth() > 0) {
+            ++activeTanks;
+        }
+    }
+    return activeTanks;
+}
+
 // Reiniciar las acciones para el nuevo turno
 void Player::resetActions() {
     moved = false;
@@ -138,4 +160,16 @@ void Player::clearPowerUpsFromScene(QGraphicsScene* scene, int xPosition, int yP
     }
 }
 
+void Player::activateFullDamagePowerUp() {
+    fullDamagePowerUpActive = true;
+    qDebug() << "Poder de Ataque activado: Las balas causarán el 100% de daño.";
+}
 
+void Player::deactivateFullDamagePowerUp() {
+    fullDamagePowerUpActive = false;
+    qDebug() << "Poder de Ataque desactivado.";
+}
+
+bool Player::isFullDamagePowerUpActive() const {
+    return fullDamagePowerUpActive;
+}

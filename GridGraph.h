@@ -8,12 +8,10 @@
 #include <QtGui/QBrush>
 #include <QtCore/QRandomGenerator>
 #include "Tank.h"
-#include "PowerUp.h"
 #include "Queue.h"
 #include "PriorityQueue.h"
 
 class GridGraph {
-private:
     int rows;
     int cols;
     int** adjMatrix;
@@ -38,7 +36,9 @@ public:
     //Metodos de busqueda
     int* bfs(int startNode, int targetNode, int& pathLenght);
     int* dijkstra(int startNode, int targetNode, int& pathLenght);
-    bool lineOfSight(int startRow, int startCol, int targetRow, int targetCol);
+    int* lineOfSight(int startRow, int startCol, int targetRow, int targetCol, int& pathLength);
+
+    int* aStar(int startNode, int targetNode, int& pathLength);
 
     bool isObstacle(int row, int col) const;
 

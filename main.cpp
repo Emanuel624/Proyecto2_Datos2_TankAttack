@@ -19,7 +19,6 @@ void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QW
     if (currentPlayerTurn == currentPlayer.getId()) {  // Solo permitir la selección si es el turno del jugador correcto
         if (currentPlayer.canTakeAction()) {
             view.selectTank(tank);  // Seleccionar el tanque usando CustomView
-            // No mostrar ningún mensaje aquí para eliminar el mensaje de "Esperando el movimiento..."
         } else {
             QMessageBox::information(parent, "Acción no permitida", QString::fromStdString(currentPlayer.getName()) + " ya ha realizado una acción en este turno.");
         }
@@ -28,35 +27,58 @@ void handleTankSelection(Tank* tank, CustomView& view, Player& currentPlayer, QW
     }
 }
 
+
+// Función para verificar el ganador
+void checkWinner(Player& player1, Player& player2, QWidget* parent) {
+    int player1Tanks = player1.countActiveTanks();
+    int player2Tanks = player2.countActiveTanks();
+
+    if (player1Tanks == 0) {
+        QMessageBox::information(parent, "Fin del juego", "Jugador 2 ha ganado destruyendo todos los tanques de Jugador 1.");
+        QApplication::quit();
+    } else if (player2Tanks == 0) {
+        QMessageBox::information(parent, "Fin del juego", "Jugador 1 ha ganado destruyendo todos los tanques de Jugador 2.");
+        QApplication::quit();
+    }
+}
+
+
 // Función para cambiar de turno
 void switchTurn(Player& player1, Player& player2, QWidget* parent) {
-    // Resetear las acciones del jugador anterior
+    checkWinner(player1, player2, parent);  // Verificar si hay un ganador en cada cambio de turno
+
     if (currentPlayerTurn == player1.getId()) {
-        player1.resetActions();  // Reiniciar acciones al cambiar de turno
-        // Reset precision movement for player1's tanks
+        if (player1.getDoubleTurn()) {
+            player1.setDoubleTurn(false);  // Deactivate the double turn
+            QMessageBox::information(parent, "Doble Turno", "Jugador 1 puede realizar otra acción.");
+            return;  // Skip switching turns
+        }
+        player1.resetActions();
         for (int i = 0; i < 4; ++i) {
             Tank* tank = player1.getTank(i);
             if (tank) {
-                tank->setPrecisionMovimientoEffect(false);  // Reset after the turn
+                tank->setPrecisionMovimientoEffect(false);
             }
         }
     } else {
+        if (player2.getDoubleTurn()) {
+            player2.setDoubleTurn(false);  // Deactivate the double turn
+            QMessageBox::information(parent, "Doble Turno", "Jugador 2 puede realizar otra acción.");
+            return;  // Skip switching turns
+        }
         player2.resetActions();
-        // Reset precision movement for player2's tanks
         for (int i = 0; i < 4; ++i) {
             Tank* tank = player2.getTank(i);
             if (tank) {
-                tank->setPrecisionMovimientoEffect(false);  // Reset after the turn
+                tank->setPrecisionMovimientoEffect(false);
             }
         }
     }
 
-    // Change the current player's turn
     currentPlayerTurn = (currentPlayerTurn == player1.getId()) ? player2.getId() : player1.getId();
     QString nextPlayerName = (currentPlayerTurn == player1.getId()) ? QString::fromStdString(player1.getName()) : QString::fromStdString(player2.getName());
     QMessageBox::information(parent, "Cambio de turno", "Es el turno del jugador " + nextPlayerName);
 }
-
 
 // Función para generar un PowerUp aleatorio
 PowerUp* generateRandomPowerUp(int cellWidth, int cellHeight) {
@@ -82,7 +104,7 @@ void assignRandomPowerUpsToPlayer(Player& player, int numberOfPowerUps, int cell
     }
 }
 
-//Funcion que ejecuta el programa.
+// Funcion que ejecuta el programa
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
@@ -182,6 +204,26 @@ int main(int argc, char *argv[]) {
         });
     }
 
+    // Temporizador de 5 minutos para determinar el ganador por cantidad de tanques
+    QTimer* timer = new QTimer(&view);
+    timer->setSingleShot(true);
+    QObject::connect(timer, &QTimer::timeout, [&]() {
+        int player1Tanks = player1.countActiveTanks();
+        int player2Tanks = player2.countActiveTanks();
+
+        QString message;
+        if (player1Tanks > player2Tanks) {
+            message = "El tiempo ha terminado. Jugador 1 ha ganado por tener más tanques.";
+        } else if (player2Tanks > player1Tanks) {
+            message = "El tiempo ha terminado. Jugador 2 ha ganado por tener más tanques.";
+        } else {
+            message = "El tiempo ha terminado. Empate, ambos jugadores tienen la misma cantidad de tanques.";
+        }
+
+        QMessageBox::information(&view, "Fin del juego", message);
+        QApplication::quit();
+    });
+    timer->start(300000);  // 5 minutos = 300,000 ms
+
     return app.exec();
 }
-

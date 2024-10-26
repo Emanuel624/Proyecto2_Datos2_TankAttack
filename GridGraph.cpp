@@ -179,46 +179,54 @@ int* GridGraph::dijkstra(int startNode, int targetNode, int& pathLength) {
     return path;
 }
 
-bool GridGraph::lineOfSight(int startRow, int startCol, int targetRow, int targetCol) {
-    // Basado en el algoritmo de Bresenham para dibujar líneas entre dos puntos
+//Linea Vista
+int* GridGraph::lineOfSight(int startRow, int startCol, int targetRow, int targetCol, int& pathLength) {
+    pathLength = 0;
+    int maxSteps = std::max(std::abs(targetRow - startRow), std::abs(targetCol - startCol)) + 1;
+    int* path = new int[maxSteps];
     int dx = std::abs(targetCol - startCol);
     int dy = std::abs(targetRow - startRow);
-
     int sx = (startCol < targetCol) ? 1 : -1;
     int sy = (startRow < targetRow) ? 1 : -1;
-
     int err = dx - dy;
 
     while (true) {
-        // Si el nodo actual es un obstáculo, no hay línea de vista
+        // Almacenar el nodo actual en la trayectoria
+        path[pathLength] = startRow * cols + startCol;
+        pathLength++;
+
+        // Verificar si hemos alcanzado los límites del mapa
+        if (startRow < 0 || startRow >= rows || startCol < 0 || startCol >= cols) {
+            break;
+        }
+
+        // Si encontramos un obstáculo, devolver el camino calculado hasta este punto
         if (isObstacle(startRow, startCol)) {
-            return false;
+            return path;
         }
 
-        // Si hemos llegado al destino, significa que hay línea de vista
+        // Si hemos llegado al destino, devolver la trayectoria calculada
         if (startRow == targetRow && startCol == targetCol) {
-            return true;
+            return path;
         }
 
-        // Actualizar las coordenadas de acuerdo al algoritmo de Bresenham
+        // Actualizar las coordenadas según el algoritmo de Bresenham
         int e2 = 2 * err;
-
         if (e2 > -dy) {
             err -= dy;
             startCol += sx;
         }
-
         if (e2 < dx) {
             err += dx;
             startRow += sy;
         }
-
-        // Verificar los límites del mapa
-        if (startRow < 0 || startRow >= rows || startCol < 0 || startCol >= cols) {
-            return false;
-        }
     }
+
+    // Si la trayectoria ha terminado sin llegar al destino o encontrar un obstáculo, devolver la trayectoria calculada hasta el límite
+    return pathLength > 0 ? path : nullptr;
 }
+
+
 
 
 

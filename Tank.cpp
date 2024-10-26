@@ -1,7 +1,5 @@
 #include "Tank.h"
 #include "GridGraph.h"
-#include "PathfindingBFS.h"
-#include "PathfindingLineaVista.h"
 #include <QtWidgets/QGraphicsScene>
 #include <QRandomGenerator>
 #include <QGraphicsSceneMouseEvent>
@@ -10,14 +8,23 @@
 #include <QLabel>
 #include <QThread>
 
+
 // Constructor para inicializar el tanque con vida, imagen y tipo
 Tank::Tank(int health, const QString &imagePath, int type)
     : health(health), pixmap(imagePath), Tank_type(type) {
+
     if (pixmap.isNull()) {
         qDebug() << "Error: No se pudo cargar la imagen desde" << imagePath;
     }
     setPixmap(pixmap);
+
+    // Crear la etiqueta de vida y configurarla cerca del tanque
+    lifeLabel = new QGraphicsTextItem(QString::number(health), this);
+    lifeLabel->setDefaultTextColor(Qt::white);  // Color del texto
+    lifeLabel->setPos(0, -20);  // Posiciona la etiqueta encima del tanque
 }
+
+
 
 void Tank::setPrecisionMovimientoEffect(bool isActive) {
     precisionMovimientoActive = isActive;
@@ -107,6 +114,49 @@ void Tank::moveToPath(GridGraph &graph, int* path, int pathLength, QGraphicsScen
         qDebug() << "No se encontró un camino para mover el tanque.";
     }
 }
+
+//Metodo de disparo
+void Tank::shoot(Player* player, QGraphicsScene* scene, GridGraph* graph, int targetRow, int targetCol, int cellWidth, int cellHeight) {
+    int damage = 50;
+    Bullet* bullet = new Bullet(graph, player, this, currentRow, currentCol, targetRow, targetCol, damage);
+    bullet->startMovement(scene, cellWidth, cellHeight);
+
+    connect(bullet, &Bullet::movementCompleted, [this]() {
+        emit movementCompleted();
+    });
+}
+
+
+
+void Tank::setHealth(int newHealth) {
+    if (newHealth < 0) {
+        health = 0;  // La vida no puede ser menor a 0
+    } else {
+        health = newHealth;  // Asigna la nueva vida
+    }
+
+    int maxHealth = 100;
+    if (health > maxHealth) {
+        health = maxHealth;  // La vida no puede superar el límite máximo
+    }
+
+    // Actualizar la etiqueta de vida
+    lifeLabel->setPlainText(QString::number(health));
+
+    // Verificar si el tanque fue destruido
+    if (health == 0) {
+        qDebug() << "Tanque destruido!";
+        if (scene()) {
+            scene()->removeItem(this);
+        }
+    }
+}
+
+
+int Tank::getType() const {
+    return Tank_type;
+}
+
 
 
 

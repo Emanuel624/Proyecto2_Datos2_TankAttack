@@ -6,7 +6,6 @@
 
 class Player; // Declaración anticipada
 
-// En PowerUp.h
 class PowerUp : public QGraphicsTextItem {
 public:
     PowerUp(const QString& name, int cellWidth, int cellHeight);

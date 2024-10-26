@@ -7,10 +7,12 @@
 #include <QObject>
 #include <QGraphicsPixmapItem>
 #include <QApplication>
+#include "Bullet.h"
 
 
 // Declaración adelantada de GridGraph
 class GridGraph;
+class Player;
 
 class Tank : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT
@@ -20,9 +22,8 @@ public:
 
     // Métodos getter
     int getHealth() const;
-    void setHealth(int health);
+    void setHealth(int newHealth);
     int getType() const;
-    bool shouldUseBFS() const;
     int selectMovementForTank() const;
 
     // Metodo para mostrar el tanque en la ventana
@@ -37,15 +38,21 @@ public:
     // Almacenar las coordenadas actuales
     int currentRow;
     int currentCol;
+    QGraphicsTextItem* lifeLabel;
 
     void setPrecisionMovimientoEffect(bool isActive);
+
+    // Metodo para disparar
+    void shoot(Player* player, QGraphicsScene* scene, GridGraph* graph, int targetRow, int targetCol, int cellWidth, int cellHeight);
+
+    int getRow() const { return currentRow; }
+    int getCol() const { return currentCol; }
 
     signals:
         void tankSelected(Tank* tank);  // Señal para notificar que un tanque ha sido seleccionado
         void movementCompleted();
+        void tankDestroyed(Tank* tank);
 
-    // Metodo para disparar
-    void shoot(QWidget *collisionTarget);
 
 private:
     int health;          // Vida del tanque
@@ -53,6 +60,8 @@ private:
     QPixmap pixmap;      // Imagen que representa al tanque
     QLabel *label;       // QLabel para mostrar la imagen del tanque
     bool precisionMovimientoActive = false;  // Flag to track if the power-up is active
+
+    Player* player;
 
 };
 

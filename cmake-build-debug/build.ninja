@@ -105,14 +105,6 @@ build CMakeFiles/Proyecto2_TankAttack.dir/PowerUpQueue.cpp.o: CXX_COMPILER__Proy
   OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
   OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
 
-build CMakeFiles/Proyecto2_TankAttack.dir/PathfindingBFS.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PathfindingBFS.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
-  DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
-  DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/PathfindingBFS.cpp.o.d
-  FLAGS = -g -fdiagnostics-color=always -fPIC
-  INCLUDES = -isystem /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets
-  OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
-  OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
-
 build CMakeFiles/Proyecto2_TankAttack.dir/PriorityQueue.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PriorityQueue.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
   DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/PriorityQueue.cpp.o.d
@@ -124,14 +116,6 @@ build CMakeFiles/Proyecto2_TankAttack.dir/PriorityQueue.cpp.o: CXX_COMPILER__Pro
 build CMakeFiles/Proyecto2_TankAttack.dir/Queue.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Queue.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
   DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/Queue.cpp.o.d
-  FLAGS = -g -fdiagnostics-color=always -fPIC
-  INCLUDES = -isystem /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets
-  OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
-  OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
-
-build CMakeFiles/Proyecto2_TankAttack.dir/PathfindingDijkstra.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/PathfindingDijkstra.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
-  DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
-  DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/PathfindingDijkstra.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always -fPIC
   INCLUDES = -isystem /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets
   OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
@@ -153,6 +137,14 @@ build CMakeFiles/Proyecto2_TankAttack.dir/PathfindingLineaVista.cpp.o: CXX_COMPI
   OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
   OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
 
+build CMakeFiles/Proyecto2_TankAttack.dir/Bullet.cpp.o: CXX_COMPILER__Proyecto2_TankAttack_unscanned_Debug /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/Bullet.cpp || cmake_object_order_depends_target_Proyecto2_TankAttack
+  DEFINES = -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/Proyecto2_TankAttack.dir/Bullet.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always -fPIC
+  INCLUDES = -isystem /home/emanuel/CLionProjects/Proyecto2_Datos2_TankAttack/cmake-build-debug/Proyecto2_TankAttack_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets
+  OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
+  OBJECT_FILE_DIR = CMakeFiles/Proyecto2_TankAttack.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Proyecto2_TankAttack
@@ -161,7 +153,7 @@ build CMakeFiles/Proyecto2_TankAttack.dir/PathfindingLineaVista.cpp.o: CXX_COMPI
 #############################################
 # Link the executable Proyecto2_TankAttack
 
-build Proyecto2_TankAttack: CXX_EXECUTABLE_LINKER__Proyecto2_TankAttack_Debug CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen/mocs_compilation.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/GridGraph.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Tank.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Player.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PowerUp.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PowerUpQueue.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PathfindingBFS.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PriorityQueue.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Queue.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PathfindingDijkstra.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/CustomView.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PathfindingLineaVista.cpp.o | /usr/lib/x86_64-linux-gnu/libQt6Charts.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6OpenGLWidgets.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so || Proyecto2_TankAttack_autogen Proyecto2_TankAttack_autogen_timestamp_deps
+build Proyecto2_TankAttack: CXX_EXECUTABLE_LINKER__Proyecto2_TankAttack_Debug CMakeFiles/Proyecto2_TankAttack.dir/Proyecto2_TankAttack_autogen/mocs_compilation.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/main.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/GridGraph.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Tank.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Player.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PowerUp.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PowerUpQueue.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PriorityQueue.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Queue.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/CustomView.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/PathfindingLineaVista.cpp.o CMakeFiles/Proyecto2_TankAttack.dir/Bullet.cpp.o | /usr/lib/x86_64-linux-gnu/libQt6Charts.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6OpenGLWidgets.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so || Proyecto2_TankAttack_autogen Proyecto2_TankAttack_autogen_timestamp_deps
   FLAGS = -g
   LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libQt6Charts.so.6.4.2  /usr/lib/x86_64-linux-gnu/libQt6OpenGLWidgets.so.6.4.2  /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2  /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.4.2  /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2  /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2  /usr/lib/x86_64-linux-gnu/libGLX.so  /usr/lib/x86_64-linux-gnu/libOpenGL.so
   OBJECT_DIR = CMakeFiles/Proyecto2_TankAttack.dir
@@ -219,7 +211,7 @@ build Proyecto2_TankAttack_autogen/timestamp Proyecto2_TankAttack_autogen/mocs_c
 #############################################
 # Phony custom command for CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps
 
-build CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps: phony /usr/lib/x86_64-linux-gnu/libQt6Charts.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2 /usr/lib/qt6/libexec/moc
+build CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/Proyecto2_TankAttack_autogen_timestamp_deps: phony /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2 /usr/lib/qt6/libexec/moc /usr/lib/x86_64-linux-gnu/libQt6Charts.so.6.4.2
 
 
 #############################################

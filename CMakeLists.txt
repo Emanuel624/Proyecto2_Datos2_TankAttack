@@ -17,12 +17,11 @@ add_executable(Proyecto2_TankAttack main.cpp
         Player.cpp
         PowerUp.cpp
         PowerUpQueue.cpp
-        PathfindingBFS.cpp
         PriorityQueue.cpp
         Queue.cpp
-        PathfindingDijkstra.cpp
         CustomView.cpp
         PathfindingLineaVista.cpp
+        Bullet.cpp
 )
 
 # Enlazar las bibliotecas de Qt6
